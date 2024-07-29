@@ -1,7 +1,7 @@
 
-const Persons = ({filtered}) => {
+const Persons = ({personsToShow}) => {
     return (
-      filtered.map(person => 
+      personsToShow.map(person => 
         <p key={person.id}>
               {person.name} {person.number}
         </p>

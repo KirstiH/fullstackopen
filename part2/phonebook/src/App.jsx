@@ -13,7 +13,7 @@ const App = () => {
   ]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
-  const [filteredSearch, setFiltered] = useState(persons);
+  const [filteredSearch, setFiltered] = useState('');
 
   const addName = (event) => {
     event.preventDefault()
@@ -28,7 +28,6 @@ const App = () => {
       setPersons(persons.concat(noteObject))
       setNewName('')
       setNewNumber('')
-      setFiltered(persons.concat(noteObject))
     }
   }
 
@@ -41,18 +40,22 @@ const App = () => {
     console.log(event.target.value)
   }
 
-  const handleSearchName = (event) => {
-    const value = event.target.value;
-    const filtered = persons.filter(p => p.name.toLowerCase().includes(value.toLowerCase()));
-    setFiltered(filtered);
-    console.log(filtered)
+  const handleSearchChange = (event) => {
+    console.log('Searching for:', event.target.value)
+    setFiltered(event.target.value)
   }
+
+
+  const personsToShow = filteredSearch === ""
+    ? persons
+    : persons.filter(person => 
+      person.name.toLowerCase().includes(filteredSearch.toLowerCase()))
 
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <Filter handleSearchName={handleSearchName} />
+      <Filter handleSearchChange={handleSearchChange} filteredSearch={filteredSearch} />
       <h3>Add a new</h3>
       <div>
         <PersonForm 
@@ -63,7 +66,7 @@ const App = () => {
         addName={addName}/>  
       </div> 
       <h3>Numbers</h3>
-      <Persons filtered={filteredSearch} />
+      <Persons personsToShow={personsToShow} />
     </div>
   )
 }
