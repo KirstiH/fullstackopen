@@ -22,7 +22,6 @@ const App = () => {
   }, [])
 
   const addName = (event) => {
-    event.preventDefault()
     const noteObject = {
       name: newName,
       number: newNumber,
@@ -35,15 +34,15 @@ const App = () => {
       phoneService
       .update(person.id, changedPerson).then(returnedPerson => {
         console.log(person.id)
-        setPersons(persons.map(person => person.name !== newName ? person : returnedPerson))
-        console.log(person)
-        console.log(returnedPerson)
+        setPersons(persons.filter(person => person.name !== newName ? person : returnedPerson))
       })
         .catch(error => {
         alert(
           `the note '${person.name}' was already deleted from server`
         )
         setPersons(persons.filter(person => person.id !== noteObject.id))
+        setNewName('')
+        setNewNumber('')
       })
     }
 
