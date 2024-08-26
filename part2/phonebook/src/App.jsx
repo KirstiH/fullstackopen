@@ -4,6 +4,8 @@ import phoneService from './services/persons'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Person from './components/Person'
+import Notification from './components/Notification'
+import './index.css'
 
 
 const App = () => {
@@ -11,6 +13,9 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filteredSearch, setFiltered] = useState('');
+  const [message, setMessage] = useState(null)
+  const [messageType, setMessageType] = useState(null);
+
 
 
   useEffect(() => {
@@ -22,6 +27,7 @@ const App = () => {
   }, [])
 
   const addName = (event) => {
+    event.preventDefault();
     const noteObject = {
       name: newName,
       number: newNumber,
@@ -33,17 +39,24 @@ const App = () => {
 
       phoneService
       .update(person.id, changedPerson).then(returnedPerson => {
-        console.log(person.id)
         setPersons(persons.filter(person => person.name !== newName ? person : returnedPerson))
       })
-        .catch(error => {
-        alert(
-          `the note '${person.name}' was already deleted from server`
+      .catch(error => {
+        setMessage(
+          `Information of ${newName} has already been removed`
         )
-        setPersons(persons.filter(person => person.id !== noteObject.id))
-        setNewName('')
-        setNewNumber('')
+        setMessageType('error')
       })
+      setTimeout(() => {
+        setMessage(null)
+      }, 3000)
+      setPersons(persons.filter(person => person.id !== noteObject.id))
+      setNewName('')
+      setNewNumber('')
+      setMessage(
+        `Information of ${newName} has been updated`
+      )
+      setMessageType('success')
     }
 
     } else {
@@ -53,6 +66,13 @@ const App = () => {
         setPersons(persons.concat(response.data))
         setNewName('')
         setNewNumber('')
+        setMessage(
+          `Added ${newName}`
+        )
+        setMessageType('success')
+        setTimeout(() => {
+          setMessage(null)
+        }, 3000)
       })
     }
   }
@@ -78,10 +98,11 @@ const App = () => {
   const handleDeletePerson = id => {
         const person = persons.find(person => person.id === id)
         if (confirm(`Delete ${person.name}`)){
-          phoneService.deletion(person.id).then( response=>{
-            setPersons(persons.filter(person => person.id !== id))
-            console.log(persons)
-          })
+          phoneService
+            .deletion(person.id)
+              .then( response=>{
+              setPersons(persons.filter(person => person.id !== id))
+            })
         } else {
           console.log("you canceled the deletion")
         }
@@ -91,6 +112,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} messageType={messageType} />
       <Filter handleSearchChange={handleSearchChange} filteredSearch={filteredSearch} />
       <h3>Add a new</h3>
       <div>
