@@ -23,14 +23,31 @@ const App = () => {
 
   const addName = (event) => {
     event.preventDefault()
+    const noteObject = {
+      name: newName,
+      number: newNumber,
+    }
     if (persons.find(person => person.name === newName)){
-      alert(`${newName} is already added to phonebook`)
-    } else {
-      const noteObject = {
-        name: newName,
-        number: newNumber,
-      }
+      const person = persons.find(person => person.name === newName)
+      const changedPerson = { ...person, number: newNumber}
+      if (confirm(`${newName} is already added to phonebook, replace the old number with a new one`)){
 
+      phoneService
+      .update(person.id, changedPerson).then(returnedPerson => {
+        console.log(person.id)
+        setPersons(persons.map(person => person.name !== newName ? person : returnedPerson))
+        console.log(person)
+        console.log(returnedPerson)
+      })
+        .catch(error => {
+        alert(
+          `the note '${person.name}' was already deleted from server`
+        )
+        setPersons(persons.filter(person => person.id !== noteObject.id))
+      })
+    }
+
+    } else {
       phoneService
       .create(noteObject)
       .then(response => {
