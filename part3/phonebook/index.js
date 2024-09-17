@@ -1,7 +1,17 @@
 const express = require('express')
-const app = express()
+const morgan = require('morgan')
 
-app.use(express.json())
+morgan.token('body', function (req) {
+    return JSON.stringify(req.body);
+})
+
+const app = express();
+
+
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
+//app.use(morgan('tiny'));
+app.use(express.json());
+
 
 let persons = [
     { 
@@ -75,7 +85,7 @@ app.post('/api/persons', (request, response) => {
         id: String(maxId)
     }
     persons = persons.concat(person)
-    console.log(person)
+    //console.log(person)
 
     response.json(person)
 })
