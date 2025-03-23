@@ -74,6 +74,15 @@ const App = () => {
           setMessage(null)
         }, 3000)
       })
+      .catch(error => {
+        // this is the way to access the error message
+        console.log(error.response.data.error)
+        setMessage(
+          `${error.response.data.error}`
+        )
+        setMessageType('error')
+        
+      })
     }
   }
 
