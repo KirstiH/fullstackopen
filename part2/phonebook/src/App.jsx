@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+//import axios from 'axios'
 import phoneService from './services/persons'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
@@ -41,7 +41,7 @@ const App = () => {
       .update(person.id, changedPerson).then(returnedPerson => {
         setPersons(persons.filter(person => person.name !== newName ? person : returnedPerson))
       })
-      .catch(error => {
+      .catch(() => {
         setMessage(
           `Information of ${newName} has already been removed`
         )
@@ -109,7 +109,7 @@ const App = () => {
         if (confirm(`Delete ${person.name}`)){
           phoneService
             .deletion(person.id)
-              .then( response=>{
+              .then(() =>{
               setPersons(persons.filter(person => person.id !== id))
             })
         } else {
