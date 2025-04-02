@@ -81,6 +81,37 @@ test('a blog can be posted without likes', async () => {
   assert.strictEqual(likes[2], 0)
 })
 
+test('a blog can not be posted without url', async () => {
+  const newBlog = {
+    title: 'JS and React',
+    author: 'Michael Philips',
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+
+  const response = await api.get('/api/blogs')
+  assert.notEqual(response.body.length, helper.initialBlogs.length + 1)
+})
+
+test('a blog can not be posted without title', async () => {
+  const newBlog = {
+    author: 'Michael Philips',
+    url: 'https://reactandjs.com',
+    likes: 7
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(400)
+
+  const response = await api.get('/api/blogs')
+  assert.notEqual(response.body.length, helper.initialBlogs.length + 1)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
