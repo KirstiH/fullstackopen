@@ -63,6 +63,24 @@ test('a new blog is successfully added', async () => {
   assert(titles.includes('React patterns with JS'))
 })
 
+test('a blog can be posted without likes', async () => {
+  const newBlog = {
+    title: 'JS and React',
+    author: 'Michael Philips',
+    url: 'https://reactandjs.com',
+  }
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/)
+
+  const response = await api.get('/api/blogs')
+  const likes = response.body.map(r => r.likes)
+  assert.strictEqual(likes[2], 0)
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
