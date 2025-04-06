@@ -208,6 +208,58 @@ describe('when there is initially one user in db', () => {
   })
 })
 
+describe('testing if new user cannot be created with too short password and username', () => {
+  test('password must be at least 3 characters long', async () => {
+    const newUser = {
+      username: 'Salla',
+      name: 'Salla',
+      password: 'sa',
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    assert(result.body.error.includes('password must be at least 3 characters long'))
+  })
+
+  test('username must be at least 3 characters long', async () => {
+
+    const newUser = {
+      username: 'sa',
+      name: 'Salla',
+      password: 'salainen',
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    assert(result.body.error.includes('is shorter than the minimum allowed length'))
+  })
+
+  test('username must be unique', async () => {
+
+    const newUser = {
+      username: 'root',
+      name: 'Superuser',
+      password: 'salainen',
+    }
+
+    const result = await api
+      .post('/api/users')
+      .send(newUser)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    assert(result.body.error.includes('expected `username` to be unique'))
+  })
+})
+
 after(async () => {
   await mongoose.connection.close()
 })
