@@ -10,6 +10,7 @@ const logger = require('./utils/logger')
 const mongoose = require('mongoose')
 
 app.use(express.json())
+app.use(middleware.tokenExtractor)
 
 mongoose.set('strictQuery', false)
 
