@@ -116,19 +116,46 @@ describe('adding a new blog with required minimum fields', () => {
 })
 
 describe('deleting a blog', () => {
-  test('a blog can be deleted', async () => {
+  test('a blog can be deleted only by the creator', async () => {
 
-    const blogsAtStart = await helper.blogsInDb()
-    const blogToDelete = blogsAtStart[0]
+    await api.post('/api/users').send({
+      username: 'testuser',
+      password: 'Kissa123',
+      name: 'The Tester'
+    })
+    const loginResponse = await api
+      .post('/api/login')
+      .send({ username: 'testuser', password: 'Kissa123' })
+
+    console.log('loginResponse', loginResponse.body)
+
+    const token = loginResponse.body.token
+    console.log('token', token)
+
+    const newBlog = {
+      title: 'Javascript',
+      author: 'Ville Kalle',
+      url: 'https://javascript.com',
+      likes: 194,
+    }
+
+    const response = await api
+      .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const blogId = response.body.id || response.body._id
 
     await api
-      .delete(`/api/blogs/${blogToDelete.id}`)
+      .delete(`/api/blogs/${blogId}`)
+      .set('Authorization', `Bearer ${token}`)
       .expect(204)
 
-    const blogsAtEnd = await helper.blogsInDb()
-
-    const titles = blogsAtEnd.map(r => r.title)
-    assert(!titles.includes(blogToDelete.title))
+    const blogsAfter = await helper.blogsInDb()
+    const ids = blogsAfter.map(b => b.id)
+    assert(!ids.includes(blogId))
   })
 })
 
