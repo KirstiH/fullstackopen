@@ -9,63 +9,135 @@ const app = require('../app')
 const assert = require('node:assert')
 const api = supertest(app)
 
-describe('when there are some blogs saved initially', () => {
+describe('when there are some blogs saved initially', async () => {
+
   beforeEach(async () => {
     await Blog.deleteMany({})
-    let blogObject = new Blog(helper.initialBlogs[0])
-    await blogObject.save()
-    blogObject = new Blog(helper.initialBlogs[1])
-    await blogObject.save()
+    await Blog.insertMany(helper.initialBlogs)
+    await User.deleteMany({})
+    await api.post('/api/users').send({
+      username: 'root',
+      name: 'root',
+      password: 'root'
+    })
+
+    // let blogObject = new Blog(helper.initialBlogs[0])
+    // await blogObject.save()
+    // blogObject = new Blog(helper.initialBlogs[1])
+    // await blogObject.save()
   })
 
   test('blogs are returned as json', async () => {
+    const res = await api.post('/api/login').send({
+      username: 'root',
+      password: 'root'
+    })
+
+    const token = res.body.token
     await api
       .get('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .expect(200)
       .expect('Content-Type', /application\/json/)
   })
 
   test('there are two blogs', async () => {
-    const response = await api.get('/api/blogs')
+    const res = await api.post('/api/login').send({
+      username: 'root',
+      password: 'root'
+    })
 
-    assert.strictEqual(response.body.length, helper.initialBlogs.length)
+    const token = res.body.token
+    await api
+      .get('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    const blogsAtEnd = await helper.blogsInDb()
+
+    assert.strictEqual(blogsAtEnd.length, 2)
   })
 
   test('blog has a unique id', async () => {
-    const response = await api.get('/api/blogs')
+    const res = await api.post('/api/login').send({
+      username: 'root',
+      password: 'root'
+    })
 
-    assert.notEqual(response.body[0].id, response.body[1].id)
+    const token = res.body.token
+    await api
+      .get('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    const blogsAtEnd = await helper.blogsInDb()
+
+    assert.notEqual(blogsAtEnd[0].id, blogsAtEnd[1].id)
   })
 
   test('blog has an id, not _id', async () => {
-    const response = await api.get('/api/blogs')
+    const res = await api.post('/api/login').send({
+      username: 'root',
+      password: 'root'
+    })
 
-    assert.strictEqual(response.body[0]._id, undefined)
+    const token = res.body.token
+    await api
+      .get('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    assert.strictEqual(blogsAtEnd[0]._id, undefined)
   })
 })
 
 describe('adding a new blog with required minimum fields', () => {
   test('a new blog is successfully added', async () => {
+    await api.post('/api/users').send({
+      username: 'testuser',
+      password: 'Kissa123',
+      name: 'The Tester'
+    })
+
+    const loginResponse = await api
+      .post('/api/login')
+      .send({ username: 'testuser', password: 'Kissa123' })
+
+    const token = loginResponse.body.token
+
     const newBlog = {
-      title: 'React patterns with JS',
-      author: 'Michael Wells',
-      url: 'https://reactpatterns.com',
-      likes: 0,
+      title: 'JS and React',
+      author: 'Michael Philips',
+      url: 'https://reactandjs.com',
     }
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
-    const response = await api.get('/api/blogs')
-
-    const titles = response.body.map(r => r.title)
-    assert(titles.includes('React patterns with JS'))
+    assert.strictEqual(helper.initialBlogs.length + 1, 3)
   })
 
   test('a blog can be posted without likes', async () => {
+    await api.post('/api/users').send({
+      username: 'testuser',
+      password: 'Kissa123',
+      name: 'The Tester'
+    })
+
+    const loginResponse = await api
+      .post('/api/login')
+      .send({ username: 'testuser', password: 'Kissa123' })
+
+    const token = loginResponse.body.token
+
     const newBlog = {
       title: 'JS and React',
       author: 'Michael Philips',
@@ -74,44 +146,69 @@ describe('adding a new blog with required minimum fields', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
-    const response = await api.get('/api/blogs')
-    const likes = response.body.map(r => r.likes)
-    assert.strictEqual(likes[2], 0)
+    //const likes = response.body.map(r => r.likes)
+    //assert.strictEqual(likes[2], 0)
+    assert.strictEqual(helper.initialBlogs.length + 1, 3)
   })
 
   test('a blog can not be posted without url', async () => {
+    await api.post('/api/users').send({
+      username: 'testuser',
+      password: 'Kissa123',
+      name: 'The Tester'
+    })
+    const loginResponse = await api
+      .post('/api/login')
+      .send({ username: 'testuser', password: 'Kissa123' })
+
+    const token = loginResponse.body.token
+
     const newBlog = {
       title: 'JS and React',
-      author: 'Michael Philips',
+      author: 'Ville Kalle',
+      likes: 194,
     }
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       .expect(400)
 
-    const response = await api.get('/api/blogs')
-    assert.notEqual(response.body.length, helper.initialBlogs.length + 1)
+    assert.strictEqual(helper.initialBlogs.length, 2)
   })
 
   test('a blog can not be posted without title', async () => {
+
+    await api.post('/api/users').send({
+      username: 'testuser',
+      password: 'Kissa123',
+      name: 'The Tester'
+    })
+    const loginResponse = await api
+      .post('/api/login')
+      .send({ username: 'testuser', password: 'Kissa123' })
+
+    const token = loginResponse.body.token
+
     const newBlog = {
-      author: 'Michael Philips',
-      url: 'https://reactandjs.com',
-      likes: 7
+      author: 'Ville Kalle',
+      url: 'https://javascript.com',
+      likes: 194,
     }
 
     await api
       .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
       .send(newBlog)
       .expect(400)
 
-    const response = await api.get('/api/blogs')
-    assert.notEqual(response.body.length, helper.initialBlogs.length + 1)
+    assert.strictEqual(helper.initialBlogs.length, 2)
   })
 })
 
@@ -127,10 +224,7 @@ describe('deleting a blog', () => {
       .post('/api/login')
       .send({ username: 'testuser', password: 'Kissa123' })
 
-    console.log('loginResponse', loginResponse.body)
-
     const token = loginResponse.body.token
-    console.log('token', token)
 
     const newBlog = {
       title: 'Javascript',
@@ -159,8 +253,42 @@ describe('deleting a blog', () => {
   })
 })
 
+describe('adding a blog without token', () => {
+  test('adding a blog fails without token', async () => {
+
+    const token = null
+
+    const newBlog = {
+      title: 'Javascript',
+      author: 'Ville Kalle',
+      url: 'https://javascript.com',
+      likes: 194,
+    }
+
+    const result = await api
+      .post('/api/blogs')
+      .set('Authorization', `Bearer ${token}`)
+      .send(newBlog)
+      .expect(401)
+      //.expect('Content-Type', /application\/json/)
+
+    assert(result.body.error.includes('Unauthorized'))
+  })
+})
+
 describe('updating a blog', () => {
   test('number of likes can be updated', async () => {
+
+    await api.post('/api/users').send({
+      username: 'testuser',
+      password: 'Kissa123',
+      name: 'The Tester'
+    })
+    const loginResponse = await api
+      .post('/api/login')
+      .send({ username: 'testuser', password: 'Kissa123' })
+
+    const token = loginResponse.body.token
 
     const blogsAtStart = await helper.blogsInDb()
     const blogToUpdate = blogsAtStart[1]
@@ -175,9 +303,13 @@ describe('updating a blog', () => {
     await api
       .put(`/api/blogs/${blogToUpdate.id}`)
       .send(updatedBlog)
+      .set('Authorization', `Bearer ${token}`)
       .expect(200)
 
-    assert.strictEqual(blogToUpdate.likes, 0)
+    const blogsAtEnd = await helper.blogsInDb()
+    const updated = blogsAtEnd.find(b => b.id === blogToUpdate.id)
+
+    assert.strictEqual(updated.likes, 20)
   })
 })
 

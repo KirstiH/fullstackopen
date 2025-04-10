@@ -25,7 +25,7 @@ usersRouter.post('/', async (request, response, next) => {
 
     response.status(201).json(savedUser)
   } catch (error) {
-    next(error)  // ← this is ESSENTIAL for errorHandler to catch it!
+    next(error)
   }
 })
 
