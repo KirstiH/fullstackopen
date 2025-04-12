@@ -10,6 +10,7 @@ const requestLogger = (request, response, next) => {
   next()
 }
 
+/**
 const tokenExtractor = (request, response, next) => {
   // code that extracts the token
   const authorization = request.get('authorization')
@@ -20,8 +21,38 @@ const tokenExtractor = (request, response, next) => {
   }
   next()
 }
+  */
+
+const tokenExtractor = request => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.startsWith('Bearer ')) {
+    return authorization.replace('Bearer ', '')
+  }
+  return null
+}
 
 const userExtractor = async (request, response, next) => {
+  const token = tokenExtractor(request)
+
+  if (!token) {
+    return response.status(401).json({ error: 'token missimg' })
+  }
+
+  const decodedToken = jwt.verify(token, process.env.SECRET)
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: 'token invalid' })
+  }
+
+  const user = await User.findById(decodedToken.id)
+
+  if (!user) {
+    return response.status(401).json({ error: 'user not found' })
+  }
+
+  request.user = user
+
+  next()
+  /**
   try {
     const decodedToken = jwt.verify(request.token, process.env.SECRET)
     if (!decodedToken.id) {
@@ -33,6 +64,7 @@ const userExtractor = async (request, response, next) => {
   } catch (error) {
     return response.status(401).json({ error: 'Unauthorized' })
   }
+    */
 }
 
 const unknownEndpoint = (request, response) => {
