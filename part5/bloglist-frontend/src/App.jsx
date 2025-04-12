@@ -3,6 +3,8 @@ import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import BlogForm from './components/BlogForm'
+import Notification from './components/Notification'
+import '../index.css'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -12,6 +14,9 @@ const App = () => {
   const [newTitle, setNewTitle] = useState('') 
   const [newAuthor, setNewAuthor] = useState('')
   const [newUrl, setNewUrl] = useState('') 
+  const [message, setMessage] = useState(null)
+  const [messageType, setMessageType] = useState(null);
+
 
   useEffect(() => {
     const fetchBlogs = async() => {
@@ -51,12 +56,13 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
+      setMessage('Wrong credentials')
+      setMessageType('error')
       setTimeout(() => {
-        console.log("wrong username or password")
+        setMessage(null)
       }, 5000)
     }
   }
-
   const handleLogOut = async (event) => {
     event.preventDefault()
     window.localStorage.removeItem('loggedBlogappUser')
@@ -91,6 +97,13 @@ const App = () => {
         setNewAuthor('')
         setNewUrl('')
       })
+      setMessage(
+        `Blog ${blogObject.title} by ${blogObject.author} added`
+      )
+      setMessageType('success')
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
   }
 
 
@@ -98,6 +111,7 @@ const App = () => {
     return (
       <div>
         <h2>Log in to application</h2>
+        <Notification message={message} messageType={messageType} />
         <form onSubmit={handleLogin}>
         <div>
           username
@@ -126,24 +140,28 @@ const App = () => {
   return (
     <div>
       <h2>Blogs</h2>
+      <Notification message={message} messageType={messageType} />
       <div>
         <p>{user.name} logged-in
         <button onClick={handleLogOut}>logout</button>
         </p>
         <div>
-        <BlogForm 
-          newTitle={newTitle} 
-          newAuthor={newAuthor}
-          newUrl={newUrl}
-          handleAddTitle={handleAddTitle} 
-          handleAddAuthor={handleAddAuthor}
-          handleAddUrl={handleAddUrl}
-          addBlog={addBlog}/>  
-      </div> 
+          <h2>create new</h2>
+          <BlogForm 
+            newTitle={newTitle} 
+            newAuthor={newAuthor}
+            newUrl={newUrl}
+            handleAddTitle={handleAddTitle} 
+            handleAddAuthor={handleAddAuthor}
+            handleAddUrl={handleAddUrl}
+            addBlog={addBlog}/>  
+        </div> 
       </div>
+      <div>
         {blogs.map(blog =>
           <Blog key={blog.id} blog={blog} />
         )}
+      </div>
     </div>
   )
 }
