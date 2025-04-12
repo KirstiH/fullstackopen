@@ -2,12 +2,16 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import BlogForm from './components/BlogForm'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [newTitle, setNewTitle] = useState('') 
+  const [newAuthor, setNewAuthor] = useState('')
+  const [newUrl, setNewUrl] = useState('') 
 
   useEffect(() => {
     const fetchBlogs = async() => {
@@ -59,6 +63,36 @@ const App = () => {
     setUser(null) 
   }
 
+  const handleAddTitle = (event) => {
+    setNewTitle(event.target.value)
+  }
+
+  const handleAddAuthor = (event) => {
+    setNewAuthor(event.target.value)
+  }
+
+  const handleAddUrl = (event) => {
+    setNewUrl(event.target.value)
+  }
+
+  const addBlog = (event) => {
+    event.preventDefault()
+    const blogObject = {
+      title: newTitle,
+      author: newAuthor,
+      url: newUrl,
+    }
+  
+    blogService
+      .create(blogObject)
+        .then(returnedBlog => {
+        setBlogs(blogs.concat(returnedBlog))
+        setNewTitle('')
+        setNewAuthor('')
+        setNewUrl('')
+      })
+  }
+
 
   if (user === null) {
     return (
@@ -96,6 +130,16 @@ const App = () => {
         <p>{user.name} logged-in
         <button onClick={handleLogOut}>logout</button>
         </p>
+        <div>
+        <BlogForm 
+          newTitle={newTitle} 
+          newAuthor={newAuthor}
+          newUrl={newUrl}
+          handleAddTitle={handleAddTitle} 
+          handleAddAuthor={handleAddAuthor}
+          handleAddUrl={handleAddUrl}
+          addBlog={addBlog}/>  
+      </div> 
       </div>
         {blogs.map(blog =>
           <Blog key={blog.id} blog={blog} />
