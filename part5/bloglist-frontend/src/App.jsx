@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 import '../index.css'
 
 const App = () => {
@@ -11,11 +12,10 @@ const App = () => {
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [newTitle, setNewTitle] = useState('') 
-  const [newAuthor, setNewAuthor] = useState('')
-  const [newUrl, setNewUrl] = useState('') 
   const [message, setMessage] = useState(null)
   const [messageType, setMessageType] = useState(null);
+
+  const blogFormRef = useRef()
 
 
   useEffect(() => {
@@ -69,33 +69,15 @@ const App = () => {
     setUser(null) 
   }
 
-  const handleAddTitle = (event) => {
-    setNewTitle(event.target.value)
-  }
+  
 
-  const handleAddAuthor = (event) => {
-    setNewAuthor(event.target.value)
-  }
-
-  const handleAddUrl = (event) => {
-    setNewUrl(event.target.value)
-  }
-
-  const addBlog = (event) => {
-    event.preventDefault()
-    const blogObject = {
-      title: newTitle,
-      author: newAuthor,
-      url: newUrl,
-    }
+  const addBlog = (blogObject) => {
+    blogFormRef.current.toggleVisibility()
   
     blogService
       .create(blogObject)
         .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
-        setNewTitle('')
-        setNewAuthor('')
-        setNewUrl('')
       })
       setMessage(
         `Blog ${blogObject.title} by ${blogObject.author} added`
@@ -137,33 +119,29 @@ const App = () => {
     )
   }
 
-  return (
-    <div>
-      <h2>Blogs</h2>
-      <Notification message={message} messageType={messageType} />
+  if (user) {
+    return (
       <div>
-        <p>{user.name} logged-in
-        <button onClick={handleLogOut}>logout</button>
-        </p>
+        <h2>Blogs</h2>
+        <Notification message={message} messageType={messageType} />
         <div>
-          <h2>create new</h2>
+          <p>{user.name} logged-in
+          <button onClick={handleLogOut}>logout</button>
+          </p>
+        </div>
+        <Togglable buttonLabel="new blog" ref={blogFormRef}>
           <BlogForm 
-            newTitle={newTitle} 
-            newAuthor={newAuthor}
-            newUrl={newUrl}
-            handleAddTitle={handleAddTitle} 
-            handleAddAuthor={handleAddAuthor}
-            handleAddUrl={handleAddUrl}
-            addBlog={addBlog}/>  
-        </div> 
+            createBlog={addBlog}
+          />
+        </Togglable>
+        <div>
+          {blogs.map(blog =>
+            <Blog key={blog.id} blog={blog} />
+          )}
+        </div>
       </div>
-      <div>
-        {blogs.map(blog =>
-          <Blog key={blog.id} blog={blog} />
-        )}
-      </div>
-    </div>
-  )
+    )
+  }
 }
 
 export default App
