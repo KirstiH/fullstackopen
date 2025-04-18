@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import blogs from '../services/blogs'
 
-const Blog = ({ blog, addLikes }) => {
+const Blog = ({ blog, addLikes, user }) => {
 
   const [visible, setVisible] = useState(false)
 
@@ -36,7 +36,7 @@ const Blog = ({ blog, addLikes }) => {
           <button onClick={() => addLikes(blog.id)}>like</button>
         </div>
         <div>
-          {blog.user.username}
+          {user.username}
         </div>
       </div>
     </div> 
