@@ -4,6 +4,7 @@ import { useState } from 'react'
         const [newTitle, setNewTitle] = useState('') 
         const [newAuthor, setNewAuthor] = useState('')
         const [newUrl, setNewUrl] = useState('') 
+        const [newLikes, setNewLikes] = useState(0)
 
         const handleAddTitle = (event) => {
             setNewTitle(event.target.value)
@@ -17,17 +18,23 @@ import { useState } from 'react'
             setNewUrl(event.target.value)
           }
 
+          const handleAddLikes = (event) => {
+            setNewLikes(event.target.value)
+          }
+
         const addBlog = (event) => {
             event.preventDefault()
             createBlog({
               title: newTitle,
               author: newAuthor,
               url: newUrl,
+              likes: newLikes || 0
             })
 
             setNewTitle('')
             setNewAuthor('')
             setNewUrl('')
+            setNewLikes(0)
         }
 
         return (
@@ -53,6 +60,13 @@ import { useState } from 'react'
                         <input
                             url={newUrl}    
                             onChange={handleAddUrl}
+                        />
+                    </div>
+                    <div>
+                        <label>Likes:</label>
+                        <input
+                            likes={newLikes}
+                            onChange={handleAddLikes}
                         />
                     </div>
                     <div>

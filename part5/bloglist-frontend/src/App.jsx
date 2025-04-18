@@ -69,6 +69,33 @@ const App = () => {
     setUser(null) 
   }
 
+
+  const addLikes = async (id) => {
+
+    const blogtoUpdate = blogs.find(blog => blog.id === id )
+    const changedBlog = { ...blogtoUpdate, likes: blogtoUpdate.likes + 1 }
+
+    blogService
+      .update(id, changedBlog)
+        .then(returnedBlog => {
+        setBlogs(blogs.map(blog => blog.id !== id ? blog : returnedBlog))  
+      })
+      .catch(() => {
+        setMessage(
+          `Blog ${changedBlog.title} by ${changedBlog.author} could not be liked`
+        )
+        setMessageType('error')
+      })
+      setMessage(
+        `Blog ${changedBlog.title} by ${changedBlog.author} liked`
+      )
+      setMessageType('success')
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
+
+  }
+
   
 
   const addBlog = (blogObject) => {
@@ -136,7 +163,7 @@ const App = () => {
         </Togglable>
         <div>
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
+            <Blog key={blog.id} blog={blog} addLikes={addLikes} />
           )}
         </div>
       </div>
