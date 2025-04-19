@@ -23,7 +23,8 @@ const App = () => {
     if (user){
       try {
         const blogs = await blogService.getAll()
-        setBlogs(blogs)
+        const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
+        setBlogs(sortedBlogs)
       } catch (error) {
         console.log("error fetching data", error.message)
       }
@@ -96,6 +97,29 @@ const App = () => {
 
   }
 
+  const removeBlog = async (id) => {
+
+    const blogToRemove = blogs.find(blog => blog.id === id )
+
+    if (confirm(`Delete ${blogToRemove.title} by ${blogToRemove.author}?`)) {
+      blogService
+      .remove(id)
+      .then(() => {
+        setBlogs(blogs.filter(blog => blog.id !== id))
+      })
+      .catch(() => {
+        setMessage(
+          `Blog could not be deleted`
+        )
+        setMessageType('success')
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
+      })
+    }
+    
+  }
+
   
 
   const addBlog = (blogObject) => {
@@ -163,7 +187,7 @@ const App = () => {
         </Togglable>
         <div>
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} addLikes={addLikes} user={user} />
+            <Blog key={blog.id} blog={blog} addLikes={addLikes} user={user} removeBlog={removeBlog} />
           )}
         </div>
       </div>
