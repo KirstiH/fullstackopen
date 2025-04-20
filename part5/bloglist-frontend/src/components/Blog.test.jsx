@@ -67,3 +67,27 @@ test('renders likes and url besides author and title', async () => {
   expect(div).toHaveTextContent(3)
 
 })
+
+test('clicking the like button twice calls event handler twice', async () => {
+  const blog = {
+    author: 'Kirsti',
+    title: 'Component testing',
+    url: 'https://react-testing-library.com',
+    likes: 3,
+    user: {
+      _id: '100',
+      username: 'Kirsti',
+      name: 'Kirsti',
+    },
+  }
+  const mockHandler = vi.fn()
+  const user = userEvent.setup()
+  render(<Blog blog={blog} user={user} addLikes={mockHandler} />)
+
+  const button = screen.getByText('like')
+  await user.click(button)
+  await user.click(button)
+
+  expect(mockHandler.mock.calls).toHaveLength(2)
+
+})
