@@ -26,7 +26,7 @@ const Blog = ({ blog, addLikes, user, removeBlog }) => {
         {blog.title} {blog.author}
         <button onClick={() => setVisible(true)}>view</button>
       </div>
-      <div style={showWhenVisible}>
+      <div style={showWhenVisible} className='visibleBlog'>
         <div>
           {blog.title} {blog.author}
           <button onClick={() => setVisible(false)}>hide</button>
