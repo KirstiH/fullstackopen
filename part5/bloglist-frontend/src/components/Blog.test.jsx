@@ -8,10 +8,22 @@ test('renders title and author', () => {
     author: 'Kirsti',
     title: 'Component testing',
     url: 'https://react-testing-library.com',
-    likes: 3
+    likes: 3,
+    user: {
+      _id: '100',
+      username: 'Kirsti',
+      name: 'Kirsti',
+    },
   }
 
-  const { container } = render(<Blog blog={blog} />)
+  const user = {
+    _id: '100',
+    username: 'Kirsti',
+    name: 'Kirsti',
+  }
+
+
+  const { container } = render(<Blog blog={blog} user={user} />)
 
   const elementTitle = screen.findByText('Component testing')
   expect(elementTitle).toBeDefined()

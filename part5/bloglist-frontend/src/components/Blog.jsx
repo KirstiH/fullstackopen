@@ -7,6 +7,7 @@ const Blog = ({ blog, addLikes, user, removeBlog }) => {
 
   const hideWhenVisible = { display: visible ? 'none' : '' }
   const showWhenVisible = { display: visible ? '' : 'none' }
+  const showDelete = { display: user.username === blog.user.username ? '' : 'none' }
 
   const blogStyle = {
     paddingTop: 10,
@@ -22,7 +23,7 @@ const Blog = ({ blog, addLikes, user, removeBlog }) => {
   return (
     <div style={blogStyle}>
       <div style={hideWhenVisible} className='hiddenBlog'>
-        {blog.title}{blog.author}
+        {blog.title} {blog.author}
         <button onClick={() => setVisible(true)}>view</button>
       </div>
       <div style={showWhenVisible}>
@@ -37,12 +38,12 @@ const Blog = ({ blog, addLikes, user, removeBlog }) => {
           {blog.likes}
           <button onClick={() => addLikes(blog.id)}>like</button>
         </div>
-        {/* <div>
+        <div>
           {blog.user.username}
-        </div> */}
-        {/* <div style={user.username === blog.user.username ? {} : { display: 'none' }}>
+        </div>
+        <div style={showDelete}>
           <button onClick={() => removeBlog(blog.id)}>remove</button>
-        </div> */}
+        </div>
       </div>
     </div>
   )
