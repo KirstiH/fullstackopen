@@ -21,8 +21,8 @@ const Blog = ({ blog, addLikes, user, removeBlog }) => {
 
   return (
     <div style={blogStyle}>
-      <div style={hideWhenVisible}>
-        {blog.title} {blog.author}
+      <div style={hideWhenVisible} className='hiddenBlog'>
+        {blog.title}{blog.author}
         <button onClick={() => setVisible(true)}>view</button>
       </div>
       <div style={showWhenVisible}>
@@ -37,12 +37,12 @@ const Blog = ({ blog, addLikes, user, removeBlog }) => {
           {blog.likes}
           <button onClick={() => addLikes(blog.id)}>like</button>
         </div>
-        <div>
+        {/* <div>
           {blog.user.username}
-        </div>
-        <div style={user.username === blog.user.username ? {} : { display: 'none' }}>
+        </div> */}
+        {/* <div style={user.username === blog.user.username ? {} : { display: 'none' }}>
           <button onClick={() => removeBlog(blog.id)}>remove</button>
-        </div>
+        </div> */}
       </div>
     </div>
   )
