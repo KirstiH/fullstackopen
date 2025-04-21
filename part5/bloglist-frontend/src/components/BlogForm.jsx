@@ -45,6 +45,7 @@ const BlogForm = ({ createBlog }) => {
         <div>
           <label>Title:</label>
           <input
+            data-testid='title'
             title={newTitle}
             onChange={handleAddTitle}
             placeholder='write blog title here'
@@ -53,6 +54,7 @@ const BlogForm = ({ createBlog }) => {
         <div>
           <label>Author:</label>
           <input
+            data-testid='author'
             author={newAuthor}
             onChange={handleAddAuthor}
             placeholder='write blog author here'
@@ -61,6 +63,7 @@ const BlogForm = ({ createBlog }) => {
         <div>
           <label>Url:</label>
           <input
+            data-testid='url'
             url={newUrl}
             onChange={handleAddUrl}
             placeholder='write blog url here'
@@ -69,6 +72,7 @@ const BlogForm = ({ createBlog }) => {
         <div>
           <label>Likes:</label>
           <input
+            data-testid='likes'
             likes={newLikes}
             onChange={handleAddLikes}
             placeholder='write blog likes here'
