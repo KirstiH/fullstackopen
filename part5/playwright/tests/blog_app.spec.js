@@ -22,10 +22,10 @@ describe('Blog app', () => {
     })
 
     test('Login fails with false credentials', async ({ page }) => {
-        await page.getByRole('textbox').first().fill('Kirsti')
+        await page.getByRole('textbox').first().fill('Kalle')
         await page.getByRole('textbox').last().fill('salainen')
         await page.getByRole('button', { name: 'login' }).click()
 
-        await expect(page.getByText('Kirsti logged-in')).toBeVisible()
+        await expect(page.getByText('Wrong credentials')).toBeVisible()
     })
 })
