@@ -17,8 +17,7 @@ const Blog = ({ blog, addLikes, user, removeBlog }) => {
     marginBottom: 5
   }
 
-  // const sortedBlogs = [...blogs].sort((a, b) => b.likes - a.likes)
-
+  console.log(blog.user.name)
 
   return (
     <div style={blogStyle}>
@@ -39,9 +38,9 @@ const Blog = ({ blog, addLikes, user, removeBlog }) => {
           <button onClick={() => addLikes(blog.id)}>like</button>
         </div>
         <div>
-          {blog.user.username}
+          {blog.user.name}
         </div>
-        <div style={showDelete}>
+        <div style={showDelete} data-testid='removeButton'>
           <button onClick={() => removeBlog(blog.id)}>remove</button>
         </div>
       </div>
