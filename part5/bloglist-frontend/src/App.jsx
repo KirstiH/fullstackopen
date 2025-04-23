@@ -108,13 +108,20 @@ const App = () => {
         })
         .catch(() => {
           setMessage(
-            `Blog ${blogToRemove.title}could not be deleted`
+            `Blog ${blogToRemove.title} could not be deleted`
           )
-          setMessageType('success')
+          setMessageType('error')
           setTimeout(() => {
             setMessage(null)
           }, 5000)
         })
+      setMessage(
+        `Blog ${blogToRemove.title} was deleted`
+      )
+      setMessageType('deletion')
+      setTimeout(() => {
+        setMessage(null)
+      }, 5000)
     }
   }
 

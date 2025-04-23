@@ -5,19 +5,9 @@ const Blog = require('../models/blog')
 
 blogsRouter.get('/', async (request, response) => {
   const blogs = await Blog
-    .find({}).populate('user', { username: 1, name: 1, id: 1 })
+    .find({}).populate('user', { username: 1, name: 1 })
 
   response.json(blogs)
-})
-
-blogsRouter.get('/:id', async (request, response) => {
-  const blog = await Blog.findById(request.params.id).populate('user', { username: 1, name:1, id: 1 })
-
-  if (blog) {
-    response.json(blog)
-  } else {
-    response.status(404).end()
-  }
 })
 
 
@@ -30,7 +20,7 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response, next) 
     author: body.author || 'Anonymous',
     url: body.url,
     likes: body.likes || 0,
-    user: user.id
+    user: user.id,
   })
 
   try {
@@ -65,7 +55,7 @@ blogsRouter.put('/:id', async (request, response) => {
     likes: body.likes,
   }
 
-  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true }).populate('user', { username: 1, name: 1, id: 1 })
+  const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true }).populate('user', { username: 1, name: 1 })
 
   response.status(200).json(updatedBlog)
 })

@@ -34,35 +34,7 @@ describe('Blog app', () => {
         })
 
     })
-
-    describe('When logged in', () => {
-        beforeEach(async ({ page }) => {
-            await loginWith(page, 'Kirsti', 'salainen')
-        })
-      
-        test('a new blog created', async ({ page }) => {
-            createBlog(page, 'one more blog', 'Kirsti', 'https://playwright.dev/', '10')
-            //await expect(page.getByText('a blog created by playwright')).toBeVisible()
-            const successDiv = await page.locator('.success')
-            await expect(successDiv).toContainText('one more blog by Kirsti added')
-        })
-        test('blog can be deleted', async ({ page }) => {
-            const otherBlogTitle = await page.getByText('one more blog')
-            const otherBlogElement = await otherBlogTitle.locator('..')
-              
-            await otherBlogElement.getByRole('button', { name: 'view' }).click()
-            //await otherBlogElement.getByRole('button', { name: 'remove' }).click()
-
-            page.once('dialog', async (dialog) => {
-                expect(dialog.type()).toBe('confirm')
-                await dialog.accept()
-            })
-
-            await otherBlogElement.getByRole('button', { name: 'remove' }).click()
-
-            await expect(page.getByText('one more blog')).not.toBeVisible()
-        })
-    })
+    
 
     describe('When logged in', () => {
         beforeEach(async ({ page }) => {
@@ -82,6 +54,25 @@ describe('Blog app', () => {
             await page.getByRole('button', { name: 'like' }).click()
             await expect(page.getByText('13')).toBeVisible()
         })
-       
+        test('blog can be deleted', async ({ page }) => {
+            createBlog(page, 'one more blog', 'Kirsti', 'https://playwright.dev/', '22')
+            const otherBlogTitle = await page.getByText('one more blog')
+            const otherBlogElement = await otherBlogTitle.locator('..')
+              
+            await otherBlogElement.getByRole('button', { name: 'view' }).click()
+            //await otherBlogElement.getByRole('button', { name: 'remove' }).click()
+
+            page.once('dialog', async (dialog) => {
+                expect(dialog.type()).toBe('confirm')
+                await dialog.accept()
+            })
+
+            await otherBlogElement.getByRole('button', { name: 'remove' }).click()
+
+            const deleteDiv = await page.locator('.deletion')
+            await expect(deleteDiv).toContainText('Blog one more blog was deleted')
+
+            //await expect(page.getByText('one more blog')).not.toBeVisible()
+        })
     })
 })

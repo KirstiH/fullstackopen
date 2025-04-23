@@ -7,7 +7,7 @@ const Blog = ({ blog, addLikes, user, removeBlog }) => {
 
   const hideWhenVisible = { display: visible ? 'none' : '' }
   const showWhenVisible = { display: visible ? '' : 'none' }
-  const showDelete = { display: user.username === blog.user.username ? '' : 'none' }
+  const showDelete = { display: !blog.user.name || user.name === blog.user.name ? '' : 'none' }
 
   const blogStyle = {
     paddingTop: 10,
@@ -16,8 +16,6 @@ const Blog = ({ blog, addLikes, user, removeBlog }) => {
     borderWidth: 1,
     marginBottom: 5
   }
-
-  console.log(blog.user.name)
 
   return (
     <div style={blogStyle}>
@@ -38,7 +36,7 @@ const Blog = ({ blog, addLikes, user, removeBlog }) => {
           <button onClick={() => addLikes(blog.id)}>like</button>
         </div>
         <div>
-          {blog.user.name}
+          {!blog.user.name ? user.name : blog.user.name}
         </div>
         <div style={showDelete} data-testid='removeButton'>
           <button onClick={() => removeBlog(blog.id)}>remove</button>
