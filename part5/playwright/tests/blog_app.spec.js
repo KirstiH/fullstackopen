@@ -12,8 +12,16 @@ describe('Blog app', () => {
                 password: 'salainen'
             },    
         })
-
-        await page.goto('http://localhost:5173')     
+        
+        await request.post('http://localhost:3001/api/users', {
+            data: {
+                name: 'Katja',
+                username: 'Katja',
+                password: 'viikuna'
+            },    
+        })
+    
+        await page.goto('http://localhost:5173')  
     })   
   
     test('Login form is shown', async ({ page }) => {
@@ -54,7 +62,7 @@ describe('Blog app', () => {
             await page.getByRole('button', { name: 'like' }).click()
             await expect(page.getByText('13')).toBeVisible()
         })
-        test('blog can be deleted', async ({ page }) => {
+        test('blog can be deleted by the creator', async ({ page }) => {
             createBlog(page, 'one more blog', 'Kirsti', 'https://playwright.dev/', '22')
             const otherBlogTitle = await page.getByText('one more blog')
             const otherBlogElement = await otherBlogTitle.locator('..')
@@ -69,10 +77,24 @@ describe('Blog app', () => {
 
             await otherBlogElement.getByRole('button', { name: 'remove' }).click()
 
+            // there is also success message visible after creating a blog, so I defined deletion
+            // style for the successful deleter notification
             const deleteDiv = await page.locator('.deletion')
             await expect(deleteDiv).toContainText('Blog one more blog was deleted')
+        })
+        test('a blog can not be deleted by another user', async ({ page }) => {
 
-            //await expect(page.getByText('one more blog')).not.toBeVisible()
+            // creating a blog by user Kirsti and then logging out
+            createBlog(page, 'blog again', 'Kirsti', 'https://playwright.dev/', '12')
+            await page.waitForTimeout(1000);
+            await page.getByRole('button', { name: 'logout' }).click()
+
+            // logging in as user Katja and chceking if the remove button is not visible
+            await loginWith(page, 'Katja', 'viikuna')
+            await page.getByText('Katja logged-in').waitFor()
+            await page.getByRole('button', { name: 'view' }).click()
+            await expect(page.getByRole('button', { name: 'remove' })).not.toBeVisible()
+
         })
     })
 })
