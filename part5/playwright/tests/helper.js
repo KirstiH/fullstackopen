@@ -9,7 +9,7 @@ const createBlog = async (page, title, author, url, likes) => {
     await page.getByTestId('title').fill(title)
     await page.getByTestId('author').fill(author)
     await page.getByTestId('url').fill(url)
-    await page.getByTestId('likes').fill(likes)
+    await page.getByTestId('likes').fill(likes.toString())
     await page.getByRole('button', { name: 'add' }).click()
     await page.getByText(title).waitFor()
 }

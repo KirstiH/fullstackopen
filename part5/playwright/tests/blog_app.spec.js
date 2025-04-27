@@ -96,5 +96,28 @@ describe('Blog app', () => {
             await expect(page.getByRole('button', { name: 'remove' })).not.toBeVisible()
 
         })
+        test('blogs are ordered according to likes', async ({ page }) => {
+            await createBlog(page, 'blog one', 'Kirsti', 'https://playwright.dev/', '12')
+            await createBlog(page, 'blog two', 'Kirsti', 'https://playwright.dev/', '2')
+            await createBlog(page, 'blog three', 'Kirsti', 'https://playwright.dev/', '3')
+            await createBlog(page, 'blog four', 'Kirsti', 'https://playwright.dev/', '6')
+
+            const viewButtons = await page.getByRole('button', { name: 'view' }).all()
+            for (const button of viewButtons) {
+                await button.click()
+            }
+        
+            // fetching all likes
+            const likeElements = await page.getByTestId('number_of_likes').all()
+            const likes = []
+            for (const likeEl of likeElements) {
+                const text = await likeEl.textContent()
+                likes.push(Number(text))
+            }
+        
+            const sortedLikes = [...likes].sort((a, b) => b - a)
+            expect(likes).toEqual(sortedLikes)
+        })
     })
+        
 })
