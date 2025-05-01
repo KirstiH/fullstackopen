@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -32,9 +34,11 @@ const reducer = (state = initialState, action) => {
       ...voteChange, 
       votes: voteChange.votes + 1 
     }
-    return state.map(anecdote =>
+    const updatedState = state.map(anecdote =>
       anecdote.id !== id ? anecdote : changed 
     )
+    const mostVotes = _.orderBy(updatedState, ['votes'], ['desc'])
+    return mostVotes
   }
   return state
 }
