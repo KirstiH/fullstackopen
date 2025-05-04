@@ -13,9 +13,23 @@ const Anecdote = ({content, votes, handleClick}) => {
     )
 }
 
+
+
 const AnecdoteList = () => {
     const dispatch = useDispatch()
-    const anecdotes = useSelector(state => state)
+    //const anecdotes = useSelector(state => state.anecdotes)
+
+    const anecdotes = useSelector(state => {
+        if ( state.filter === '' ) {
+          return state.anecdotes
+        }
+        return state.anecdotes.filter(anecdote => anecdote.content.toLowerCase().indexOf(state.filter) > -1)
+        //state.filter  === 'IMPORTANT' 
+          //? state.notes.filter(note => note.important)
+          //: state.notes.filter(note => !note.important)
+          
+          
+      })
 
     return (
         <div>
