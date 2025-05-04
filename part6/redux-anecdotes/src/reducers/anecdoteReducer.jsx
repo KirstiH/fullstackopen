@@ -21,46 +21,6 @@ const asObject = (anecdote) => {
 
 const initialState = anecdotesAtStart.map(asObject)
 
-// const reducer = (state = initialState, action) => {
-//   console.log('state now: ', state)
-//   console.log('action', action)
-//   if (action.type === 'NEW_ANECDOTE') {
-//     return [...state, action.payload]
-//   }
-//   else if (action.type === 'VOTE') { 
-//     const id = action.payload.id
-//     const voteChange = state.find(n => n.id === id)
-//     const changed = { 
-//       ...voteChange, 
-//       votes: voteChange.votes + 1 
-//     }
-//     const updatedState = state.map(anecdote =>
-//       anecdote.id !== id ? anecdote : changed 
-//     )
-//     const mostVotes = _.orderBy(updatedState, ['votes'], ['desc'])
-//     return mostVotes
-//   }
-//   return state
-// }
-
-// export const voteAnecdote = (id) => {
-//   return {
-//     type: 'VOTE',
-//     payload: { id }
-//   }
-// }  
-
-// export const createAnecdote = (content) => {
-//   return {
-//     type: 'NEW_ANECDOTE',
-//     payload: {
-//       content,
-//       votes: 0,
-//       id: getId()
-//     }
-//   }
-// }
-
 const anecdoteSlice = createSlice({
   name: 'anecdotes',
   initialState,
