@@ -1,4 +1,3 @@
-import _ from 'lodash'
 import { createSlice, current } from '@reduxjs/toolkit'
 
 const anecdotesAtStart = [
@@ -85,7 +84,8 @@ const anecdoteSlice = createSlice({
       const updatedState = state.map(anecdote =>
         anecdote.id !== id ? anecdote : changed 
       )
-      const mostVotes = _.orderBy(updatedState, ['votes'], ['desc'])
+      //const mostVotes = _.orderBy(updatedState, ['votes'], ['desc'])
+      const mostVotes = updatedState.sort((a, b) => b.votes - a.votes);
       return mostVotes
     }
   }
