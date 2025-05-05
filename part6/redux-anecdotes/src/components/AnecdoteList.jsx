@@ -14,8 +14,6 @@ const Anecdote = ({content, votes, handleClick}) => {
     )
 }
 
-
-
 const AnecdoteList = () => {
     const dispatch = useDispatch()
     //const anecdotes = useSelector(state => state.anecdotes)
