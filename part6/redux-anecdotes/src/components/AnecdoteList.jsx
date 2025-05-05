@@ -1,5 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { voteAnecdote } from '../reducers/anecdoteReducer'
+import { removeNotification, setNotification } from '../reducers/notificationReducer'
 
 // eslint-disable-next-line react/prop-types
 const Anecdote = ({content, votes, handleClick}) => {
@@ -23,12 +24,7 @@ const AnecdoteList = () => {
         if ( state.filter === '' ) {
           return state.anecdotes
         }
-        return state.anecdotes.filter(anecdote => anecdote.content.toLowerCase().indexOf(state.filter) > -1)
-        //state.filter  === 'IMPORTANT' 
-          //? state.notes.filter(note => note.important)
-          //: state.notes.filter(note => !note.important)
-          
-          
+        return state.anecdotes.filter(anecdote => anecdote.content.toLowerCase().indexOf(state.filter) > -1)  
       })
 
     return (
@@ -38,7 +34,13 @@ const AnecdoteList = () => {
               key={anecdote.id}
               content={anecdote.content}
               votes={anecdote.votes}
-              handleClick={() => dispatch(voteAnecdote(anecdote.id))}
+              handleClick={() => {
+                dispatch(voteAnecdote(anecdote.id))
+                dispatch(setNotification(`you voted '${anecdote.content}'`))
+                setTimeout(() => {
+                  dispatch(removeNotification())
+                }, 5000)
+              }}
             />
           )}
         </div>
