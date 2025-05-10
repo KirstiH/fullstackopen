@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { voteAnecdote } from '../reducers/anecdoteReducer'
-import { removeNotification, setNotification } from '../reducers/notificationReducer'
+import { setNotificationWithTime } from '../reducers/notificationReducer'
 
 // eslint-disable-next-line react/prop-types
 const Anecdote = ({content, votes, handleClick}) => {
@@ -34,10 +34,7 @@ const AnecdoteList = () => {
               votes={anecdote.votes}
               handleClick={() => {
                 dispatch(voteAnecdote(anecdote))
-                dispatch(setNotification(`you voted '${anecdote.content}'`))
-                setTimeout(() => {
-                  dispatch(removeNotification())
-                }, 5000)
+                dispatch(setNotificationWithTime(`you voted '${anecdote.content}'`, 1))
               }}
             />
           )}
