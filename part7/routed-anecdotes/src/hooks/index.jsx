@@ -8,9 +8,7 @@ export const useField = (type) => {
   }
 
   return {
-    type,
-    value,
-    onChange
+    value, type, onChange
   }
 }
 

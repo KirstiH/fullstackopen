@@ -61,11 +61,11 @@ const CreateNew = (props) => {
   const content = useField('text')
   const author = useField('text')
   const info = useField('text')
-  const votes = useField('number')
 
 
   const handleSubmit = (e) => {
     e.preventDefault()
+    // eslint-disable-next-line react/prop-types
     props.addNew({
       content: content.value,
       author: author.value,
@@ -76,7 +76,7 @@ const CreateNew = (props) => {
 
   const handleReset = () => {
     content.reset()
-    author.reset()
+    author.reset()  
     info.reset()
   }
 
@@ -86,27 +86,15 @@ const CreateNew = (props) => {
       <form >
         <div>
           content:
-          <input
-            type={content.type}
-            value={content.value}
-            onChange={content.onChange} 
-          /> 
+          <input {...content} /> 
         </div>
         <div>
           author:
-          <input
-            type={author.type}
-            value={author.value}
-            onChange={author.onChange} 
-          />
+          <input {...author}/>
         </div>
         <div>
           info:
-          <input
-            type={info.type}
-            value={info.value}
-            onChange={info.onChange} 
-          />
+          <input {...info}/>
         </div>
         <button onClick={handleSubmit}>create</button>
         <button onClick={handleReset}>reset</button>
@@ -185,26 +173,22 @@ const App = () => {
   }
   
 
-
-  const anecdoteById = (id) =>
-    anecdotes.find(a => a.id === id)
-
   const match = useMatch('/anecdotes/:id')
 
   const anecdote = match
     ? anecdotes.find(anecdote => anecdote.id === Number(match.params.id))
     : null
 
-  const vote = (id) => {
-    const anecdote = anecdoteById(id)
+  // const vote = (id) => {
+  //   const anecdote = anecdoteById(id)
 
-    const voted = {
-      ...anecdote,
-      votes: anecdote.votes + 1
-    }
+  //   const voted = {
+  //     ...anecdote,
+  //     votes: anecdote.votes + 1
+  //   }
 
-    setAnecdotes(anecdotes.map(a => a.id === id ? voted : a))
-  }
+  //   setAnecdotes(anecdotes.map(a => a.id === id ? voted : a))
+  // }
 
   return (
     <div>
