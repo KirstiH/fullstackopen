@@ -5,9 +5,12 @@ import loginService from './services/login'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
+import { setNotificationWithTime } from './reducers/notificationReducer'
+import { useDispatch, useSelector } from 'react-redux'
 import '../index.css'
 
 const App = () => {
+    
     const [blogs, setBlogs] = useState([])
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
@@ -16,6 +19,8 @@ const App = () => {
     const [messageType, setMessageType] = useState(null)
 
     const blogFormRef = useRef()
+
+    const dispatch = useDispatch()
 
     useEffect(() => {
         const fetchBlogs = async () => {
@@ -60,11 +65,12 @@ const App = () => {
             setUsername('')
             setPassword('')
         } catch (exception) {
-            setMessage('Wrong credentials')
-            setMessageType('error')
-            setTimeout(() => {
-                setMessage(null)
-            }, 5000)
+            dispatch(setNotificationWithTime(`Wrong credentials`, 5))
+            // setMessage('Wrong credentials')
+            // setMessageType('error')
+            // setTimeout(() => {
+            //     setMessage(null)
+            // }, 5000)
         }
     }
     const handleLogOut = async (event) => {
@@ -85,16 +91,18 @@ const App = () => {
                 )
             })
             .catch(() => {
-                setMessage(
-                    `Blog ${changedBlog.title} by ${changedBlog.author} could not be liked`
-                )
-                setMessageType('error')
+                dispatch(setNotificationWithTime(`Blog ${changedBlog.title} by ${changedBlog.author} could not be liked`, 5))
+                // setMessage(
+                //     `Blog ${changedBlog.title} by ${changedBlog.author} could not be liked`
+                // )
+                // setMessageType('error')
             })
-        setMessage(`Blog ${changedBlog.title} by ${changedBlog.author} liked`)
-        setMessageType('success')
-        setTimeout(() => {
-            setMessage(null)
-        }, 5000)
+            dispatch(setNotificationWithTime(`Blog ${changedBlog.title} by ${changedBlog.author} liked`, 5))
+        // setMessage(`Blog ${changedBlog.title} by ${changedBlog.author} liked`)
+        // setMessageType('success')
+        // setTimeout(() => {
+        //     setMessage(null)
+        // }, 5000)
     }
 
     const removeBlog = async (id) => {
@@ -109,19 +117,21 @@ const App = () => {
                     setBlogs(blogs.filter((blog) => blog.id !== id))
                 })
                 .catch(() => {
-                    setMessage(
-                        `Blog ${blogToRemove.title} could not be deleted`
-                    )
-                    setMessageType('error')
-                    setTimeout(() => {
-                        setMessage(null)
-                    }, 5000)
+                    dispatch(setNotificationWithTime(`Blog ${blogToRemove.title} could not be deleted`, 5))
+                    // setMessage(
+                    //     `Blog ${blogToRemove.title} could not be deleted`
+                    // )
+                    // setMessageType('error')
+                    // setTimeout(() => {
+                    //     setMessage(null)
+                    // }, 5000)
                 })
-            setMessage(`Blog ${blogToRemove.title} was deleted`)
-            setMessageType('deletion')
-            setTimeout(() => {
-                setMessage(null)
-            }, 5000)
+             dispatch(setNotificationWithTime(`Blog ${blogToRemove.title} was deleted`, 5))   
+            // setMessage(`Blog ${blogToRemove.title} was deleted`)
+            // setMessageType('deletion')
+            // setTimeout(() => {
+            //     setMessage(null)
+            // }, 5000)
         }
     }
 
@@ -130,18 +140,19 @@ const App = () => {
         blogService.create(blogObject).then((returnedBlog) => {
             setBlogs(blogs.concat(returnedBlog))
         })
-        setMessage(`Blog ${blogObject.title} by ${blogObject.author} added`)
-        setMessageType('success')
-        setTimeout(() => {
-            setMessage(null)
-        }, 5000)
+        dispatch(setNotificationWithTime(`Blog ${blogObject.title} by ${blogObject.author} added`, 5)) 
+        // setMessage(`Blog ${blogObject.title} by ${blogObject.author} added`)
+        // setMessageType('success')
+        // setTimeout(() => {
+        //     setMessage(null)
+        // }, 5000)
     }
 
     if (user === null) {
         return (
             <div>
                 <h2>Log in to application</h2>
-                <Notification message={message} messageType={messageType} />
+                <Notification />
                 <form onSubmit={handleLogin}>
                     <div>
                         username
@@ -173,7 +184,7 @@ const App = () => {
         return (
             <div>
                 <h2>Blogs</h2>
-                <Notification message={message} messageType={messageType} />
+                <Notification />
                 <div>
                     <p>
                         {user.name} logged-in
