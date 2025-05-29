@@ -7,22 +7,6 @@ const BlogForm = ({ createBlog }) => {
     const [newUrl, setNewUrl] = useState('')
     const [newLikes, setNewLikes] = useState(0)
 
-    const handleAddTitle = (event) => {
-        setNewTitle(event.target.value)
-    }
-
-    const handleAddAuthor = (event) => {
-        setNewAuthor(event.target.value)
-    }
-
-    const handleAddUrl = (event) => {
-        setNewUrl(event.target.value)
-    }
-
-    const handleAddLikes = (event) => {
-        setNewLikes(event.target.value)
-    }
-
     const addBlog = (event) => {
         event.preventDefault()
         createBlog({
@@ -31,6 +15,9 @@ const BlogForm = ({ createBlog }) => {
             url: newUrl,
             likes: newLikes || 0,
         })
+
+        console.log(newTitle, newAuthor, newUrl, newLikes)
+        console.log('new blog added', createBlog)
 
         setNewTitle('')
         setNewAuthor('')
@@ -46,8 +33,8 @@ const BlogForm = ({ createBlog }) => {
                     <label>Title:</label>
                     <input
                         data-testid="title"
-                        title={newTitle}
-                        onChange={handleAddTitle}
+                        value={newTitle}
+                        onChange={(event) => setNewTitle(event.target.value)}
                         placeholder="write blog title here"
                     />
                 </div>
@@ -55,8 +42,8 @@ const BlogForm = ({ createBlog }) => {
                     <label>Author:</label>
                     <input
                         data-testid="author"
-                        author={newAuthor}
-                        onChange={handleAddAuthor}
+                        value={newAuthor}
+                        onChange={(event) => setNewAuthor(event.target.value)}
                         placeholder="write blog author here"
                     />
                 </div>
@@ -64,8 +51,8 @@ const BlogForm = ({ createBlog }) => {
                     <label>Url:</label>
                     <input
                         data-testid="url"
-                        url={newUrl}
-                        onChange={handleAddUrl}
+                        value={newUrl}
+                        onChange={(event) => setNewUrl(event.target.value)}
                         placeholder="write blog url here"
                     />
                 </div>
@@ -73,8 +60,8 @@ const BlogForm = ({ createBlog }) => {
                     <label>Likes:</label>
                     <input
                         data-testid="likes"
-                        likes={newLikes}
-                        onChange={handleAddLikes}
+                        value={newLikes}
+                        onChange={(event) => setNewLikes(event.target.value)}
                         placeholder="write blog likes here"
                     />
                 </div>
