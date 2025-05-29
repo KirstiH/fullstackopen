@@ -102,12 +102,11 @@ const App = () => {
                 .remove(id)
                 .then(() => {
                     dispatch(removingBlog(id))
-                    //setBlogs(blogs.filter((blog) => blog.id !== id))
+                    dispatch(setNotificationWithTime(`Blog ${blogToRemove.title} was deleted`, 5))
                 })
                 .catch(() => {
                     dispatch(setNotificationWithTime(`Blog ${blogToRemove.title} could not be deleted`, 5))
                 })
-             dispatch(setNotificationWithTime(`Blog ${blogToRemove.title} was deleted`, 5))
         }
     }
 
@@ -170,7 +169,7 @@ const App = () => {
                     <BlogForm createBlog={addBlog} />
                 </Togglable>
                 <div>
-                    {blogs.map((blog) => (
+                    {blogs.map(blog => 
                         <Blog
                             key={blog.id}
                             blog={blog}
@@ -178,7 +177,7 @@ const App = () => {
                             user={user}
                             removeBlog={removeBlog}
                         />
-                    ))}
+                    )}
                 </div>
             </div>
         )

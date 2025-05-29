@@ -8,7 +8,8 @@ const blogSlice = createSlice({
   initialState: [],
   reducers: {
     removingBlog(state, action) {
-      return action.payload
+      const id = action.payload
+      return state.filter(blog => blog.id !== id)
     },
     updateBlog(state, action) {
       const updatedBlog = action.payload
