@@ -9,11 +9,12 @@ import { setNotificationWithTime } from './reducers/notificationReducer'
 import { useDispatch, useSelector } from 'react-redux'
 import '../index.css'
 import { setBlogs, createBlog, updateBlog, removingBlog } from './reducers/blogReducer'
+import { setUser, removeUser } from './reducers/userReducer'
 
 const App = () => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
-    const [user, setUser] = useState(null)
+    //const [user, setUser] = useState(null)
     const [message, setMessage] = useState(null)
     const [messageType, setMessageType] = useState(null)
 
@@ -21,6 +22,7 @@ const App = () => {
 
     const dispatch = useDispatch()
     const blogs = useSelector(state => state.blogs)
+    const user = useSelector(state => state.user)
 
     useEffect(() => {
         const fetchBlogs = async () => {
@@ -39,15 +41,6 @@ const App = () => {
         fetchBlogs()
     }, [user])
 
-    useEffect(() => {
-        const loggedUserJSON = window.localStorage.getItem('loggedBlogappUser')
-        if (loggedUserJSON) {
-            const user = JSON.parse(loggedUserJSON)
-            setUser(user)
-            blogService.setToken(user.token)
-        }
-    }, [])
-
     const handleLogin = async (event) => {
         event.preventDefault()
 
@@ -56,12 +49,8 @@ const App = () => {
                 username,
                 password,
             })
-            window.localStorage.setItem(
-                'loggedBlogappUser',
-                JSON.stringify(user)
-            )
             blogService.setToken(user.token)
-            setUser(user)
+            dispatch(setUser(user))
             setUsername('')
             setPassword('')
         } catch (exception) {
@@ -70,8 +59,7 @@ const App = () => {
     }
     const handleLogOut = async (event) => {
         event.preventDefault()
-        window.localStorage.removeItem('loggedBlogappUser')
-        setUser(null)
+        dispatch(removeUser(null))
     }
 
     const addLikes = async (id) => {
@@ -82,9 +70,6 @@ const App = () => {
             .update(id, changedBlog)
             .then((returnedBlog) => {
                 dispatch(updateBlog(returnedBlog))
-                // setBlogs(
-                //     blogs.map((blog) => (blog.id !== id ? blog : returnedBlog))
-                // )
             })
             .catch(() => {
                 dispatch(setNotificationWithTime(`Blog ${changedBlog.title} by ${changedBlog.author} could not be liked`, 5))
