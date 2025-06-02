@@ -7,7 +7,6 @@ import userService from './services/users'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
-import UserInfo from './components/UserInfo'
 import { setNotificationWithTime } from './reducers/notificationReducer'
 import { useDispatch, useSelector } from 'react-redux'
 import '../index.css'
@@ -15,13 +14,12 @@ import { setBlogs, createBlog, updateBlog, removingBlog } from './reducers/blogR
 import { setUser, removeUser } from './reducers/userReducer'
 import {
   BrowserRouter as Router,
-  Routes, Route, Link, Navigate, useNavigate
+  Routes, Route, Link, Navigate, useMatch
 } from 'react-router-dom'
 
 const App = () => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
-    //const [user, setUser] = useState(null)
     const [message, setMessage] = useState(null)
     const [messageType, setMessageType] = useState(null)
     const [users, setUsers] = useState([])
@@ -31,6 +29,11 @@ const App = () => {
     const dispatch = useDispatch()
     const blogs = useSelector(state => state.blogs)
     const user = useSelector(state => state.user)
+
+    const match = useMatch('/users/:id')
+        const userForBlog = match 
+            ? users.find(userForBlog => userForBlog.id === match.params.id)
+            : null
 
     useEffect(() => {
         const fetchBlogs = async () => {
@@ -116,57 +119,6 @@ const App = () => {
         }
     }
 
-    // const Login = () => {
-    //     const navigate = useNavigate()
-
-    //     const handleLogin = async (event) => {
-    //     event.preventDefault()
-
-    //     try {
-    //         const user = await loginService.login({
-    //             username,
-    //             password,
-    //         })
-    //         blogService.setToken(user.token)
-    //         dispatch(setUser(user))
-    //         setUsername('')
-    //         setPassword('')
-    //         navigate('/')
-    //     } catch (exception) {
-    //         dispatch(setNotificationWithTime(`Wrong credentials`, 5))
-    //     }
-    // }
-
-    //     return (
-    //         <div>
-    //             <h2>Log in to application</h2>
-    //             <Notification />
-    //             <form onSubmit={handleLogin}>
-    //                 <div>
-    //                     username
-    //                     <input
-    //                         data-testid="username"
-    //                         type="text"
-    //                         value={username}
-    //                         name="Username"
-    //                         onChange={({ target }) => setUsername(target.value)}
-    //                     />
-    //                 </div>
-    //                 <div>
-    //                     password
-    //                     <input
-    //                         data-testid="password"
-    //                         type="password"
-    //                         value={password}
-    //                         name="Password"
-    //                         onChange={({ target }) => setPassword(target.value)}
-    //                     />
-    //                 </div>
-    //                 <button type="submit">login</button>
-    //             </form>
-    //         </div>
-    //     )
-    // }
 
     const Home = () => {
         if (!user) {
@@ -213,7 +165,7 @@ const App = () => {
                 {users.map(user => 
                     <UserInfo
                         key={user.id}
-                        author={user.name}
+                        user={user}
                         blogs={user.blogs}
                     />
                 )}
@@ -221,6 +173,19 @@ const App = () => {
             </div>
         )
     }
+
+    const UserInfo = ({ user, blogs }) => {
+    return (
+        <tbody>
+            <tr>
+                <td>
+                    <Link to={`/users/${user.id}`}>{user.name}</Link>
+                </td>
+                <td>{blogs.length}</td>
+            </tr>
+        </tbody>
+    )
+}
 
     const Users = () => {
         return (
@@ -239,16 +204,42 @@ const App = () => {
         )
     }
 
+    const User = ({ userForBlog }) => {
+        if (!userForBlog) {
+            return <p>User not found</p>
+        }
+        return (
+            <div>
+                <h2>{userForBlog.name}</h2>
+                <h3>added blogs</h3>
+                {blogs.filter(blog => blog.user.id === userForBlog.id).map(blog =>
+                    <Blogs
+                        key={blog.id}
+                        blog={blog}
+                    />
+                )}
+            </div>
+        )
+    }
+
+    const Blogs = ({ blog }) => {
+        return (
+            <ul>
+                <li>{blog.title}</li>
+            </ul>
+        )
+    }
+
+
+
     const padding = {
         padding: 5
     }
 
     return (
         <div>
-        <Router>
         <div>
             <Link style={padding} to="/">home</Link>
-            {/* <Link style={padding} to="/notes">notes</Link> */}
             <Link style={padding} to="/users">users</Link>
             {user
                 ? <em>{user.name} logged in</em>
@@ -257,12 +248,11 @@ const App = () => {
         </div>
 
         <Routes>
-            {/* <Route path="/notes" element={<Notes />} /> */}
+            <Route path="/users/:id" element={<User userForBlog={userForBlog} />} />
             <Route path="/users" element={user ? <Users /> : <Navigate replace to="/login" />} />
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<Home />} />
         </Routes>
-        </Router>
         <div>
             <i>Note app, Department of Computer Science 2024</i>
         </div>
