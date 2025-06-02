@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import Blog from './components/Blog'
+//import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import Login from './components/Login'
@@ -33,6 +33,11 @@ const App = () => {
     const match = useMatch('/users/:id')
         const userForBlog = match 
             ? users.find(userForBlog => userForBlog.id === match.params.id)
+            : null
+
+    const matchBlog = useMatch('/blogs/:id')
+        const blogInfo = matchBlog 
+            ? blogs.find(blogInfo => blogInfo.id === matchBlog.params.id)
             : null
 
     useEffect(() => {
@@ -124,6 +129,14 @@ const App = () => {
         if (!user) {
             return null
         }
+
+        const blogStyle = {
+            paddingTop: 10,
+            paddingLeft: 2,
+            border: 'solid',
+            borderWidth: 1,
+            marginBottom: 5,
+        }
         return (
             <div>
                 <h2>Blogs</h2>
@@ -139,13 +152,9 @@ const App = () => {
                 </Togglable>
                 <div>
                     {blogs.map(blog => 
-                        <Blog
-                            key={blog.id}
-                            blog={blog}
-                            addLikes={addLikes}
-                            user={user}
-                            removeBlog={removeBlog}
-                        />
+                        <p style={blogStyle}>       
+                            <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+                        </p>
                     )}
                 </div>
             </div>
@@ -230,6 +239,29 @@ const App = () => {
         )
     }
 
+    const BlogInfo = ({ blogInfo }) => {
+        if (!blogInfo) {
+            return <p>Blog not found</p>
+        }
+        return (
+            <div>
+                <div>
+                    <h2>Blogs</h2>
+                    <div>
+                        <p>{user.name} logged-in</p>
+                        <button onClick={handleLogOut}>logout</button>
+                    </div>
+                </div>
+                <div>
+                    <h1>{blogInfo.title} {blogInfo.author}</h1>
+                    <a href={blogInfo.url}>{blogInfo.url}</a>
+                    <p>{blogInfo.likes} likes <button onClick={() => addLikes(blogInfo.id)}>like</button></p>
+                    <p>added by {blogInfo.user.name} <button hidden={user.name !== blogInfo.user.name} onClick={() => removeBlog(blogInfo.id)}>remove</button></p> 
+                </div>
+            </div>
+        )
+    }
+
 
 
     const padding = {
@@ -248,6 +280,7 @@ const App = () => {
         </div>
 
         <Routes>
+            <Route path="/blogs/:id" element={<BlogInfo blogInfo={blogInfo} />} />
             <Route path="/users/:id" element={<User userForBlog={userForBlog} />} />
             <Route path="/users" element={user ? <Users /> : <Navigate replace to="/login" />} />
             <Route path="/login" element={<Login />} />
