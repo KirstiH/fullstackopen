@@ -13,6 +13,20 @@ import '../index.css'
 import { setBlogs, createBlog, updateBlog, removingBlog } from './reducers/blogReducer'
 import { setUser, removeUser } from './reducers/userReducer'
 import {
+  Container,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableRow,
+  Paper,
+  TextField,
+  Button,
+  AppBar,
+  Toolbar,
+  Alert
+} from '@mui/material'
+import {
   BrowserRouter as Router,
   Routes, Route, Link, Navigate, useMatch
 } from 'react-router-dom'
@@ -152,7 +166,7 @@ const App = () => {
                 </Togglable>
                 <div>
                     {blogs.map(blog => 
-                        <p style={blogStyle}>       
+                        <p key={blog.id} style={blogStyle}>       
                             <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
                         </p>
                     )}
@@ -269,15 +283,24 @@ const App = () => {
     }
 
     return (
+        <Container>
         <div>
-        <div>
-            <Link style={padding} to="/">home</Link>
-            <Link style={padding} to="/users">users</Link>
-            {user
+            <AppBar position="static" color="gray" >
+            <Toolbar >
+                <Button component={Link} to="/">
+                home
+                </Button>
+                <Button component={Link} to="/users">
+                users
+                </Button>  
+                {user
                 ? <em>{user.name} logged in</em>
-                : <Link style={padding} to="/login">login</Link>
-            }
-        </div>
+                : <Button component={Link} to="/login">
+                    login
+                    </Button>
+                }                              
+            </Toolbar>
+            </AppBar>
 
         <Routes>
             <Route path="/blogs/:id" element={<BlogInfo blogInfo={blogInfo} />} />
@@ -290,6 +313,7 @@ const App = () => {
             <i>Note app, Department of Computer Science 2024</i>
         </div>
      </div>
+     </Container>
   )
 }
 
