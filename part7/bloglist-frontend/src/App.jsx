@@ -37,6 +37,7 @@ const App = () => {
     const [message, setMessage] = useState(null)
     const [messageType, setMessageType] = useState(null)
     const [users, setUsers] = useState([])
+    const [comment, setNewComment] = useState('')
 
     const blogFormRef = useRef()
 
@@ -106,6 +107,21 @@ const App = () => {
                 dispatch(setNotificationWithTime(`Blog ${changedBlog.title} by ${changedBlog.author} could not be liked`, 5))
             })
             dispatch(setNotificationWithTime(`Blog ${changedBlog.title} by ${changedBlog.author} liked`, 5))
+    }
+
+    const handleComment = async (event) => {
+        event.preventDefault()
+        const blogtoUpdate = blogs.find((blog) => blog.id === blogInfo.id)
+        const changedBlog = { ...blogtoUpdate, comments: blogtoUpdate.comments.concat(comment) }
+        blogService
+            .addComment(blogInfo.id, changedBlog)
+            .then((returnedBlog) => {
+                dispatch(updateBlog(returnedBlog))
+            })
+            .catch(() => {
+                dispatch(setNotificationWithTime(`Comment could not be added`, 5))
+            })
+            dispatch(setNotificationWithTime(`Comment added`, 5))
     }
 
     const removeBlog = async (id) => {
@@ -271,6 +287,20 @@ const App = () => {
                     <a href={blogInfo.url}>{blogInfo.url}</a>
                     <p>{blogInfo.likes} likes <button onClick={() => addLikes(blogInfo.id)}>like</button></p>
                     <p>added by {blogInfo.user.name} <button hidden={user.name !== blogInfo.user.name} onClick={() => removeBlog(blogInfo.id)}>remove</button></p> 
+                </div>
+                <h2>Comments</h2>
+                <form onSubmit={handleComment}>
+                    <div>
+                        <input
+                            value={comment}
+                            onChange={(event) => setNewComment(event.target.value)}
+                            placeholder="haven't read this yet.."
+                        />
+                        <button type="submit">comment</button>
+                    </div>
+                </form>
+                <div>
+                    {blogInfo.comments.map(comment => <p key={comment.id}>{comment}</p>)}
                 </div>
             </div>
         )
