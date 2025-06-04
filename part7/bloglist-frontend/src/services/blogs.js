@@ -22,7 +22,13 @@ const update = async (id, newObject) => {
 }
 
 const addComment = async (id, comment) => {
-    const response = await axios.post(`${baseUrl}/${id}/comments`, comment)
+    const config = {
+        headers: { Authorization: token },
+    }
+    console.log("comment in blogs.js: ", comment)
+    console.log("blog id in blogs.js: ", id)
+    const response = await axios.post(`${baseUrl}/${id}/comments`, { comments: comment }, config)
+    console.log("response in blogs.js: ", response)
     return response.data
 }
 

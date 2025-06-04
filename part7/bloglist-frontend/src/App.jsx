@@ -1,7 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-//import Blog from './components/Blog'
 import blogService from './services/blogs'
-import loginService from './services/login'
 import Login from './components/Login'
 import userService from './services/users'
 import BlogForm from './components/BlogForm'
@@ -9,6 +7,7 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import { setNotificationWithTime } from './reducers/notificationReducer'
 import { useDispatch, useSelector } from 'react-redux'
+import Comment from './components/Comment'
 import '../index.css'
 import { setBlogs, createBlog, updateBlog, removingBlog } from './reducers/blogReducer'
 import { setUser, removeUser } from './reducers/userReducer'
@@ -19,12 +18,12 @@ import {
   TableCell,
   TableContainer,
   TableRow,
+  TableHead,
   Paper,
-  TextField,
+  Typography,
   Button,
   AppBar,
   Toolbar,
-  Alert
 } from '@mui/material'
 import {
   BrowserRouter as Router,
@@ -32,12 +31,7 @@ import {
 } from 'react-router-dom'
 
 const App = () => {
-    const [username, setUsername] = useState('')
-    const [password, setPassword] = useState('')
-    const [message, setMessage] = useState(null)
-    const [messageType, setMessageType] = useState(null)
     const [users, setUsers] = useState([])
-    const [comment, setNewComment] = useState('')
 
     const blogFormRef = useRef()
 
@@ -109,21 +103,6 @@ const App = () => {
             dispatch(setNotificationWithTime(`Blog ${changedBlog.title} by ${changedBlog.author} liked`, 5))
     }
 
-    const handleComment = async (event) => {
-        event.preventDefault()
-        const blogtoUpdate = blogs.find((blog) => blog.id === blogInfo.id)
-        const changedBlog = { ...blogtoUpdate, comments: blogtoUpdate.comments.concat(comment) }
-        blogService
-            .addComment(blogInfo.id, changedBlog)
-            .then((returnedBlog) => {
-                dispatch(updateBlog(returnedBlog))
-            })
-            .catch(() => {
-                dispatch(setNotificationWithTime(`Comment could not be added`, 5))
-            })
-            dispatch(setNotificationWithTime(`Comment added`, 5))
-    }
-
     const removeBlog = async (id) => {
         const blogToRemove = blogs.find((blog) => blog.id === id)
 
@@ -160,33 +139,28 @@ const App = () => {
             return null
         }
 
-        const blogStyle = {
-            paddingTop: 10,
-            paddingLeft: 2,
-            border: 'solid',
-            borderWidth: 1,
-            marginBottom: 5,
-        }
         return (
             <div>
-                <h2>Blogs</h2>
+                <h2>Blog app</h2>
                 <Notification />
-                <div>
-                    <p>
-                        {user.name} logged-in
-                        <button onClick={handleLogOut}>logout</button>
-                    </p>
-                </div>
                 <Togglable buttonLabel="new blog" ref={blogFormRef}>
                     <BlogForm createBlog={addBlog} />
                 </Togglable>
-                <div>
-                    {blogs.map(blog => 
-                        <p key={blog.id} style={blogStyle}>       
-                            <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
-                        </p>
-                    )}
-                </div>
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableBody>
+                        {blogs.map(blog =>
+                            <TableRow key={blog.id}>
+                            <TableCell>
+                                <Typography variant="body1">
+                                    <Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+                                </Typography>
+                            </TableCell>
+                            </TableRow>
+                        )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
             </div>
         )
     }
@@ -194,50 +168,45 @@ const App = () => {
     const UsersList = () => {
         return (
             <div>
-                <table>
-                <thead>
-                    <tr>
-                        <th scope="col"></th>
-                        <th scope="col">Blogs</th>
-                    </tr>
-                </thead>
-                {users.map(user => 
-                    <UserInfo
-                        key={user.id}
-                        user={user}
-                        blogs={user.blogs}
-                    />
-                )}
-                </table>
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell variant="head">
+                                    <Typography variant="h5" color='gray'>
+                                        Users
+                                    </Typography>
+                                </TableCell>
+                                <TableCell variant="head">
+                                    <Typography variant="h5" color='gray'>
+                                        Blogs
+                                    </Typography>
+                                </TableCell>
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                        {users.map(user => 
+                            <TableRow key={user.id}>
+                            <TableCell>
+                                <Link to={`/users/${user.id}`}>{user.name}</Link>
+                            </TableCell>
+                            <TableCell>
+                                {user.blogs.length}
+                            </TableCell>
+                            </TableRow>
+                        )}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
             </div>
         )
     }
 
-    const UserInfo = ({ user, blogs }) => {
-    return (
-        <tbody>
-            <tr>
-                <td>
-                    <Link to={`/users/${user.id}`}>{user.name}</Link>
-                </td>
-                <td>{blogs.length}</td>
-            </tr>
-        </tbody>
-    )
-}
-
     const Users = () => {
         return (
             <div>
-                <h2>Blogs</h2>
+                <h2>Blog app</h2>
                 <Notification />
-                <div>
-                    <p>
-                        {user.name} logged-in
-                        <button onClick={handleLogOut}>logout</button>
-                    </p>
-                </div>
-                <h2>Users</h2>
                 <UsersList />
             </div>
         )
@@ -276,32 +245,19 @@ const App = () => {
         return (
             <div>
                 <div>
-                    <h2>Blogs</h2>
-                    <div>
-                        <p>{user.name} logged-in</p>
-                        <button onClick={handleLogOut}>logout</button>
-                    </div>
+                    <h2>Blog app</h2>
                 </div>
-                <div>
+                <div style={padding}>
                     <h1>{blogInfo.title} {blogInfo.author}</h1>
                     <a href={blogInfo.url}>{blogInfo.url}</a>
                     <p>{blogInfo.likes} likes <button onClick={() => addLikes(blogInfo.id)}>like</button></p>
                     <p>added by {blogInfo.user.name} <button hidden={user.name !== blogInfo.user.name} onClick={() => removeBlog(blogInfo.id)}>remove</button></p> 
                 </div>
                 <h2>Comments</h2>
-                <form onSubmit={handleComment}>
-                    <div>
-                        <input
-                            value={comment}
-                            onChange={(event) => setNewComment(event.target.value)}
-                            placeholder="haven't read this yet.."
-                        />
-                        <button type="submit">comment</button>
-                    </div>
-                </form>
-                <div>
-                    {blogInfo.comments.map(comment => <p key={comment.id}>{comment}</p>)}
-                </div>
+                <Comment blogInfo={blogInfo} blogs={blogs} />
+                <ul>
+                    {blogInfo.comments.map(comment => <li key={comment.id}>{comment}</li>)}
+                </ul>
             </div>
         )
     }
@@ -309,7 +265,7 @@ const App = () => {
 
 
     const padding = {
-        padding: 5
+        padding: 3
     }
 
     return (
@@ -318,13 +274,13 @@ const App = () => {
             <AppBar position="static" color="gray" >
             <Toolbar >
                 <Button component={Link} to="/">
-                home
+                    blogs
                 </Button>
                 <Button component={Link} to="/users">
-                users
+                    users
                 </Button>  
                 {user
-                ? <em>{user.name} logged in</em>
+                ? <em>{user.name} logged in <button onClick={handleLogOut}>logout</button></em>
                 : <Button component={Link} to="/login">
                     login
                     </Button>

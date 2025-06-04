@@ -10,18 +10,6 @@ const requestLogger = (request, response, next) => {
     next()
 }
 
-/**
-const tokenExtractor = (request, response, next) => {
-  // code that extracts the token
-  const authorization = request.get('authorization')
-  if (authorization && authorization.startsWith('Bearer ')) {
-    request.token = authorization.replace('Bearer ', '')
-  } else {
-    request.token = null
-  }
-  next()
-}
-  */
 
 const tokenExtractor = (request) => {
     const authorization = request.get('authorization')
@@ -52,19 +40,6 @@ const userExtractor = async (request, response, next) => {
     request.user = user
 
     next()
-    /**
-  try {
-    const decodedToken = jwt.verify(request.token, process.env.SECRET)
-    if (!decodedToken.id) {
-      return response.status(401).json({ error: 'Unauthorized' })
-    }
-    request.user = await User.findById(decodedToken.id)
-    next()
-  // eslint-disable-next-line no-unused-vars
-  } catch (error) {
-    return response.status(401).json({ error: 'Unauthorized' })
-  }
-    */
 }
 
 const unknownEndpoint = (request, response) => {

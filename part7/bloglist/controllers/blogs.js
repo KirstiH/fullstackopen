@@ -21,10 +21,11 @@ blogsRouter.post(
             url: body.url,
             likes: body.likes || 0,
             user: user.id,
+            comments: body.comments || [],
         })
 
         try {
-            const savedBlog = await await blog.save()
+            const savedBlog = await blog.save()
             user.blogs = user.blogs.concat(savedBlog._id)
             await user.save()
 
@@ -33,6 +34,24 @@ blogsRouter.post(
                 name: 1,
             })
             response.status(201).json(populatedBlog)
+        } catch (error) {
+            next(error)
+        }
+    }
+)
+
+blogsRouter.post(
+    '/:id/comments',
+    middleware.userExtractor,
+    async (request, response, next) => {
+        const body = request.body
+        const user = request.user
+
+        try {
+            const blog = await Blog.findById(request.params.id)
+            blog.comments = blog.comments.concat(body.comments)
+            await blog.save()
+            response.status(200).json(blog)
         } catch (error) {
             next(error)
         }

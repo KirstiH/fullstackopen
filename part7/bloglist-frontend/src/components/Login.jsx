@@ -6,6 +6,10 @@ import blogService from '../services/blogs'
 import loginService from '../services/login'
 import { setUser } from '../reducers/userReducer'
 import Notification from '../components/Notification'
+import {
+  TextField,
+  Button,
+} from '@mui/material'
 
 const Login = () => {
         const [username, setUsername] = useState('')
@@ -37,26 +41,23 @@ const Login = () => {
                 <Notification />
                 <form onSubmit={handleLogin}>
                     <div>
-                        username
-                        <input
-                            data-testid="username"
-                            type="text"
-                            value={username}
-                            name="Username"
+                        <TextField 
+                            label="username" 
+                            value={username} 
                             onChange={({ target }) => setUsername(target.value)}
-                        />
+                        />                  
                     </div>
                     <div>
-                        password
-                        <input
-                            data-testid="password"
-                            type="password"
-                            value={password}
-                            name="Password"
+                        <TextField 
+                            label="password" 
+                            type='password' 
+                            value={password} 
                             onChange={({ target }) => setPassword(target.value)}
                         />
                     </div>
-                    <button type="submit">login</button>
+                    <Button variant="contained" color="primary" type="submit">
+                        login
+                    </Button>
                 </form>
             </div>
         )
