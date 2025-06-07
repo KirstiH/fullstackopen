@@ -16,6 +16,10 @@ const App = () => {
     return <div>loading...</div>
   }
 
+  if (result2.loading)  {
+    return <div>loading...</div>
+  }
+
   return (
     <div>
       <div>
