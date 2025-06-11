@@ -9,6 +9,7 @@ import { ALL_BOOKS } from './queries'
 
 const App = () => {
   const [page, setPage] = useState("authors");
+  const [errorMessage, setErrorMessage] = useState(null)
   const result = useQuery(ALL_AUTHORS)
   const result2 = useQuery(ALL_BOOKS)
   
@@ -20,6 +21,13 @@ const App = () => {
     return <div>loading...</div>
   }
 
+  const notify = (message) => {
+    setErrorMessage(message)
+    setTimeout(() => {
+      setErrorMessage(null)
+    }, 10000)
+  }
+
   return (
     <div>
       <div>
@@ -28,13 +36,26 @@ const App = () => {
         <button onClick={() => setPage("add")}>add book</button>
       </div>
 
+      <Notify errorMessage={errorMessage} />
+
       <Authors authors={result.data.allAuthors} show={page === "authors"} />
 
       <Books books={result2.data.allBooks} show={page === "books"} />
 
-      <NewBook show={page === "add"} />
+      <NewBook show={page === "add"} setError={notify} />
     </div>
   );
 };
+
+const Notify = ({errorMessage}) => {
+  if ( !errorMessage ) {
+    return null
+  }
+  return (
+    <div style={{color: 'red'}}>
+    {errorMessage}
+    </div>
+  )
+}
 
 export default App;

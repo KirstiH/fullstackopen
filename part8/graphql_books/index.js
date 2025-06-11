@@ -237,8 +237,18 @@ const resolvers = {
         }
         let author = await Author.findOne({ name: args.author })
         if (!author) {
-          author = new Author({ name: args.author })
-          await author.save()
+          try {
+            author = new Author({ name: args.author })
+            await author.save()
+          } catch (error) {
+             throw new GraphQLError('Author name must be at least 4 characters long ', {
+              extensions: {
+              code: 'BAD_USER_INPUT',
+              invalidArgs: args.title,
+              error
+            }
+          })
+          }
         }
         const book = new Book({
           title: args.title,
@@ -250,7 +260,7 @@ const resolvers = {
           const savedBook = await book.save()
           return savedBook.populate('author') 
         } catch (error) {
-          throw new GraphQLError('Saving book failed', {
+          throw new GraphQLError('Saving book failed, title must be at least 5 characters long', {
             extensions: {
               code: 'BAD_USER_INPUT',
               invalidArgs: args.title,
