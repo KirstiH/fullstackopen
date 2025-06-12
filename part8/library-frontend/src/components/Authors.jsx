@@ -4,7 +4,7 @@ import { ALL_AUTHORS, EDIT_AUTHOR } from '../queries'
 import Select from 'react-select';
 
 
-const Authors = ({authors, show}) => {
+const Authors = ({authors, show, token}) => {
   
   const [name, setName] = useState('')
   const [bornYear, setBorn] = useState('')
@@ -54,9 +54,9 @@ const Authors = ({authors, show}) => {
           ))}
         </tbody>
       </table>
-      <h2>Set birthyear</h2>
+      <h2 hidden={token === null}>Set birthyear</h2>
       <div>
-        <form onSubmit={setBirthYear}>
+        <form hidden={token === null} onSubmit={setBirthYear}>
           <div>
             <Select
               defaultValue={selectedOption}
