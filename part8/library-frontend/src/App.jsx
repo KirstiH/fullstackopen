@@ -4,9 +4,11 @@ import Books from "./components/Books";
 import NewBook from "./components/NewBook";
 import LoginForm from "./components/LoginForm";
 import Notify from "./components/Notify";
+import Recommendations from "./components/Recommendations";
 import { useQuery, useApolloClient } from '@apollo/client'
 import { ALL_AUTHORS } from './queries'
 import { ALL_BOOKS } from './queries'
+import { ME } from './queries'
 
 
 const App = () => {
@@ -17,6 +19,7 @@ const App = () => {
   const result = useQuery(ALL_AUTHORS)
   const result2 = useQuery(ALL_BOOKS)
   const client = useApolloClient()
+  const result3 = useQuery(ME)
 
   
   if (result.loading)  {
@@ -50,11 +53,13 @@ const App = () => {
         <button hidden={!token} onClick={() => setPage("add")}>add book</button>
         <button hidden={!token} onClick={logout}>logout</button>
         <button hidden={token} onClick={() => setPage("login")}>login</button>
+        <button hidden={!token} onClick={() => setPage("recommended")}>recommendations</button>
       </div>
 
       <Notify errorMessage={errorMessage} />
       <Authors authors={result.data.allAuthors} show={page === "authors"} token={token}/>
       <Books books={result2.data.allBooks} show={page === "books"}  />
+      <Recommendations books={result2.data.allBooks} user={result3.data.me} show={page === "recommended"} />
       <NewBook show={page === "add"} setError={notify} />
       <LoginForm show={page === "login"} setToken={setToken} setError={notify} />
     </div>
