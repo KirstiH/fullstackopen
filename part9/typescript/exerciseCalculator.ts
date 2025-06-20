@@ -7,7 +7,7 @@ const parseArguments2 = (args: string[]): exerciceValues => {
   if (args.length < 4) throw new Error('Not enough arguments');
 
   let target = 0;
-  let numbers = [];
+  const numbers = [];
 
   if (isNaN(Number(args[2]))) {
     throw new Error('Provided values were not numbers!');
@@ -33,12 +33,12 @@ const parseArguments2 = (args: string[]): exerciceValues => {
     return {
         value1: target,
         value2: numbers
-    }
+    };
 
-}
+};
 
 
-const exerciseCalculator = (target : number, numbers: number[]): Object => {
+const exerciseCalculator = (target : number, numbers: number[]): object => {
     let hours = 0;
     let trainingDays = 0;
 
@@ -49,7 +49,7 @@ const exerciseCalculator = (target : number, numbers: number[]): Object => {
         }
     }
 
-    let average = hours / numbers.length
+    const average = hours / numbers.length;
 
     if (average < target - 1) {
         return {
@@ -60,7 +60,7 @@ const exerciseCalculator = (target : number, numbers: number[]): Object => {
             ratingDescription: 'should have been better',
             target: target,
             average: average
-        }
+        };
     }
     else if (average < target) {
         return {
@@ -71,7 +71,7 @@ const exerciseCalculator = (target : number, numbers: number[]): Object => {
             ratingDescription: 'not too bad but could be better',
             target: target,
             average: average
-        }
+        };
     }
     else {
         return {
@@ -82,9 +82,9 @@ const exerciseCalculator = (target : number, numbers: number[]): Object => {
             ratingDescription: 'well done',
             target: target,
             average: average
-        }
+        };
     }
-}
+};
 
 
 try {
@@ -92,7 +92,7 @@ try {
     const result = exerciseCalculator(value1, value2);
     console.log(result);
 } catch (error: unknown) {
-    let errorMessage = 'Something went wrong: '
+    let errorMessage = 'Something went wrong: ';
     if (error instanceof Error) {
         errorMessage += error.message;
     }

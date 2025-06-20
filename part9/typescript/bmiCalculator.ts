@@ -11,11 +11,11 @@ const parseArguments = (args: string[]): bmiValues => {
     return {
       value1: Number(args[2]),
       value2: Number(args[3])
-    }
+    };
   } else {
     throw new Error('Provided values were not numbers!');
   }
-}
+};
 
 const calculateBmi = (height: number, mass: number) : object => {
   const heightInMeters = height / 100;
@@ -35,8 +35,8 @@ const calculateBmi = (height: number, mass: number) : object => {
     weight: mass,
     height: height,
     bmi: result
-  }
-}
+  };
+};
 
 try {
   if (require.main === module) {
@@ -45,11 +45,11 @@ try {
     console.log(result);
   }
 } catch (error: unknown) {
-  let errorMessage = 'Something bad happened.'
+  let errorMessage = 'Something bad happened.';
   if (error instanceof Error) {
     errorMessage += ' Error: ' + error.message;
   }
   console.log(errorMessage);
 }
 
-export default calculateBmi
+export default calculateBmi;
