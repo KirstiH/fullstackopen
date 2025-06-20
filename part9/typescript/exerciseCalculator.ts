@@ -38,7 +38,7 @@ const parseArguments2 = (args: string[]): exerciceValues => {
 };
 
 
-const exerciseCalculator = (target : number, numbers: number[]): object => {
+export const exerciseCalculator = (target : number, numbers: number[]): object => {
     let hours = 0;
     let trainingDays = 0;
 
@@ -57,7 +57,7 @@ const exerciseCalculator = (target : number, numbers: number[]): object => {
             trainingDays: trainingDays,
             success: false,
             rating: 1,
-            ratingDescription: 'should have been better',
+            ratingDescription: 'bad',
             target: target,
             average: average
         };
