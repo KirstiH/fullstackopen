@@ -8,6 +8,8 @@ export interface DiagnosisEntry {
 
 export type PatientPreview = Omit<PatientEntry, "ssn">;
 
+export type NewPatientEntry = Omit<PatientEntry, 'id'>;
+
 export interface PatientEntry {
   id: string;
   name: string;
