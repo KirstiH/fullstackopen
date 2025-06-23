@@ -19,7 +19,6 @@ const getPreviewEntries = (): PatientPreview[] => {
 const addPatient = ( entry: NewPatientEntry ): PatientEntry => {
  
   const newPatientEntry = {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     id: uuid(),
     ...entry
   };
