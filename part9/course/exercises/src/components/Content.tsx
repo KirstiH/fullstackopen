@@ -1,18 +1,34 @@
-interface coursePartProps {
-    name: string
-    exerciseCount: number
+
+import Part from "./Part"
+import type { CoursePart} from "../App"
+
+const assertNever = (value: never): never => {
+  throw new Error(
+    `Unhandled discriminated union member: ${JSON.stringify(value)}`
+  );
+};
+
+// Define the props type
+interface ContentProps {
+  courseParts: CoursePart[];
 }
 
-interface coursePartsProps {
-    courseParts: coursePartProps[]
-}
 
-const Content = (props: coursePartsProps) => {
+const Content = ({ courseParts }: ContentProps) => {
     return (
         <div>
-            {props.courseParts.map(part => 
-                <p key={part.name}>{part.name} {part.exerciseCount}</p>
-            )}
+            {courseParts.map(part => {
+                switch (part.kind) {
+                    case "basic":
+                        return <Part key={part.name} {...part} />
+                    case "group":
+                        return <Part key={part.name} {...part} />
+                    case "background":
+                        return <Part key={part.name} {...part} />
+                    default:
+                        return assertNever(part);
+                }
+            })}
         </div>
     )
 }
