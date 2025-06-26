@@ -25,6 +25,8 @@ const Content = ({ courseParts }: ContentProps) => {
                         return <Part key={part.name} {...part} />
                     case "background":
                         return <Part key={part.name} {...part} />
+                    case "special":
+                        return <Part key={part.name} {...part} />
                     default:
                         return assertNever(part);
                 }

@@ -8,7 +8,12 @@ export interface CoursePartBase {
 }
 
 export interface CoursePartBasic extends CoursePartDescription {
-  kind: "basic"
+  kind: "basic",
+}
+
+export interface CoursePartRequirements extends CoursePartDescription {
+  requirements: string[],
+  kind: "special"
 }
 
 export interface CoursePartDescription extends CoursePartBase {
@@ -25,7 +30,7 @@ export interface CoursePartBackground extends CoursePartDescription {
   kind: "background"
 }
 
-export type CoursePart = CoursePartBasic | CoursePartGroup | CoursePartBackground
+export type CoursePart = CoursePartBasic | CoursePartGroup | CoursePartBackground | CoursePartRequirements
 
 const App = () => {
 
@@ -62,30 +67,15 @@ const App = () => {
     description: "a hard part",
     kind: "basic",
   },
+  {
+  name: "Backend development",
+  exerciseCount: 21,
+  description: "Typing the backend",
+  requirements: ["nodejs", "jest"],
+  kind: "special"
+  }
 ];
 
-// const assertNever = (value: never): never => {
-//   throw new Error(
-//     `Unhandled discriminated union member: ${JSON.stringify(value)}`
-//   );
-// };
-
-// courseParts.forEach(part => {
-//   switch (part.kind) {
-//     case "basic":
-//       console.log(part.name, part.exerciseCount)
-//       break
-//     case "group":
-//       console.log(part.name, part.exerciseCount, part.groupProjectCount)
-//       break
-//     case "background":
-//       console.log(part.name, part.exerciseCount, part.description, part.backgroundMaterial)
-//       break
-//     default:
-//       return assertNever(part);
-//       break
-//   }
-// })
   const totalExercises = courseParts.reduce((sum, part) => sum + part.exerciseCount, 0);
 
   return (
