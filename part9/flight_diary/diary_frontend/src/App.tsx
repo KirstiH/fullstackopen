@@ -1,6 +1,9 @@
 import { useState, type SetStateAction } from 'react'
 import { useEffect } from 'react';
 import {getAllEntries, createEntry} from './diaryService';
+import Notification from './Notification';
+import axios from 'axios';
+import type { ValidationError, Weather, Visibility } from './types';
 
 export interface DiaryEntry {
     id: number;
@@ -13,23 +16,50 @@ export interface DiaryEntry {
 function App() {
 
   const [date, setDate] = useState('');
+  const [notification, setNotification] = useState('');
   const [weather, setWeather] = useState('');
   const [visibility, setVisibility] = useState('');
   const [comment, setComment] = useState('');
   const [entries, setEntries] = useState<DiaryEntry[]>([]);
 
   useEffect(() => {
-    getAllEntries().then((data: SetStateAction<DiaryEntry[]>) => {
+    try {
+      getAllEntries().then((data: SetStateAction<DiaryEntry[]>) => {
       setEntries(data)
     })
+    } catch (error) {
+      setNotification(`Unknown error: ${error}`);
+      setTimeout(() => {
+        setNotification('');
+      }, 5000);
+    }
   }, [])
+    
 
-  const setNewEntry = (event: React.SyntheticEvent) => {
+  const setNewEntry = async (event: React.SyntheticEvent) => {
     event.preventDefault();
-
-    createEntry({ id: entries.length + 1, date, weather, visibility, comment }).then((data) => {
-      setEntries(entries.concat(data))
-    })
+    try {
+      const newEntry = await createEntry({ id: entries.length + 1, date, weather, visibility, comment });
+      setEntries(entries.concat(newEntry))
+    } catch (error) {
+      if (axios.isAxiosError<ValidationError, Record<Weather, unknown>>(error)) {
+        setNotification(`${error.response?.data} : ${weather}`);
+        setTimeout(() => {
+          setNotification('');
+        }, 5000);
+      if (axios.isAxiosError<ValidationError, Record<Visibility, unknown>>(error)) {
+        setNotification(`${error.response?.data} : ${visibility}`);
+        setTimeout(() => {
+          setNotification('');
+        }, 5000);
+      }
+      } else {
+        setNotification(`Unknown error: ${error}`);
+        setTimeout(() => {
+          setNotification('');
+        }, 5000);
+      }
+    }
     setDate('');
     setWeather('');
     setVisibility('');
@@ -39,6 +69,7 @@ function App() {
   return (
     <>
       <h1>Add new entry</h1>
+      <Notification notification={notification} />
       <form onSubmit={setNewEntry}>
         <div>
         Date
@@ -75,17 +106,15 @@ function App() {
         <button type='submit'>add</button>
       </form>
       <h1>Diary entries</h1>
-      <ul>
         {entries.map(entry => 
-          <li key={entry.id}>
+          <div key={entry.id}>
             <div><strong>{entry.date}</strong></div>
             <div>{entry.weather}</div>
             <div>{entry.visibility}</div>
             <div>{entry.comment}</div>
-          </li>
+            <br></br>
+          </div>
         )}
-      </ul>
-      
     </>
   )
 }
