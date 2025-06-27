@@ -42,17 +42,31 @@ function App() {
       const newEntry = await createEntry({ id: entries.length + 1, date, weather, visibility, comment });
       setEntries(entries.concat(newEntry))
     } catch (error) {
+      if (axios.isAxiosError<ValidationError, Record<string, unknown>>(error)) {
+        setNotification(`${error.response?.data} : ${date}`);
+        setTimeout(() => {
+          setNotification('');
+        }, 5000);
+      }
       if (axios.isAxiosError<ValidationError, Record<Weather, unknown>>(error)) {
         setNotification(`${error.response?.data} : ${weather}`);
         setTimeout(() => {
           setNotification('');
         }, 5000);
+        setWeather('');
+      }
       if (axios.isAxiosError<ValidationError, Record<Visibility, unknown>>(error)) {
         setNotification(`${error.response?.data} : ${visibility}`);
         setTimeout(() => {
           setNotification('');
         }, 5000);
+        setVisibility('');
       }
+      if (axios.isAxiosError<ValidationError, Record<string, unknown>>(error)) {
+        setNotification(`${error.response?.data} : ${comment}`);
+        setTimeout(() => {
+          setNotification('');
+        }, 5000);
       } else {
         setNotification(`Unknown error: ${error}`);
         setTimeout(() => {
@@ -80,20 +94,28 @@ function App() {
         />
         </div>
         <div>
-        Weather
-        <input
-          type="text"
-          value={weather}
-          onChange={(event) => setWeather(event.target.value)} 
-        />
+        Weather:
+        sunny  <input type="radio" name="weather"
+          onChange={() => setWeather('sunny')} />
+        rainy   <input type="radio" name="weather"
+          onChange={() => setWeather('rainy')} />
+        cloudy <input type="radio" name="weather"
+          onChange={() => setWeather('cloudy')} />
+        stormy <input type="radio" name="weather"
+          onChange={() => setWeather('stormy')} />
+        windy <input type="radio" name="weather"
+          onChange={() => setWeather('windy')} />
         </div>
         <div>
-        Visibility
-        <input
-          type="text"
-          value={visibility}
-          onChange={(event) => setVisibility(event.target.value)} 
-        />
+        Visibility:
+        good  <input type="radio" name="visibility"
+          onChange={() => setVisibility('good')} />
+        ok   <input type="radio" name="visibility"
+          onChange={() => setVisibility('ok')} />
+        poor <input type="radio" name="visibility"
+          onChange={() => setVisibility('poor')} />
+        great <input type="radio" name="visibility"
+          onChange={() => setVisibility('great')} />
         </div>
         <div>
         Comment
