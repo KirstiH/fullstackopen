@@ -1,13 +1,13 @@
 import express from 'express';
 import patientService from '../services/patientService';
-import { PatientPreview } from '../types';
+import { NonSensitivePatient } from '../types';
 import { Response } from 'express';
 import toNewPatientEntry from '../utils';
 import { z } from 'zod';
 
 const router = express.Router();
 
-router.get('/', (_req, res: Response<PatientPreview[]>) => {
+router.get('/', (_req, res: Response<NonSensitivePatient[]>) => {
   res.send(patientService.getPreviewEntries());
 });
 
