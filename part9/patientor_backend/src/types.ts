@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { newEntrySchema } from "./utils";
+import { newDiagnosisEntrySchema, newEntrySchema } from "./utils";
 
 
 export interface BaseEntry {
@@ -10,6 +10,12 @@ export interface BaseEntry {
   diagnosisCodes?: Array<Diagnosis['code']>;
 }
 
+// export enum EntryType {
+//   HealthCheck = "HealthCheck",
+//   OccupationalHealthcare = "OccupationalHealthcare",
+//   Hospital = "Hospital"
+// }
+
 export enum HealthCheckRating {
   "Healthy" = 0,
   "LowRisk" = 1,
@@ -17,12 +23,12 @@ export enum HealthCheckRating {
   "CriticalRisk" = 3
 }
 
-interface HealthCheckEntry extends BaseEntry {
+export interface HealthCheckEntry extends BaseEntry {
   type: "HealthCheck";
   healthCheckRating: HealthCheckRating;
 }
 
-interface OccupationalHealthcareEntry extends BaseEntry {
+export interface OccupationalHealthcareEntry extends BaseEntry {
   type: "OccupationalHealthcare";
   employerName: string;
   sickLeave?: {
@@ -31,7 +37,7 @@ interface OccupationalHealthcareEntry extends BaseEntry {
   };
 }
 
-interface HospitalEntry extends BaseEntry {
+export interface HospitalEntry extends BaseEntry {
   type: "Hospital";
   discharge: {
     date: string,
@@ -55,6 +61,12 @@ export enum Gender {
   Female = "female",
   Other = "other"
 }
+
+type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
+// Define Entry without the 'id' property
+export type EntryWithoutId = UnionOmit<DiagnosisEntry, 'id'>;
+
+export type NewDiagnosisEntry = z.infer<typeof newDiagnosisEntrySchema>;
 
 export type NewPatientEntry = z.infer<typeof newEntrySchema>; 
 

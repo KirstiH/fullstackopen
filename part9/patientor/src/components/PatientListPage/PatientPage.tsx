@@ -11,7 +11,7 @@ import { useParams } from "react-router-dom";
 import HealthCheck from "./HealthCheck";
 import OccupationalHealthcare from "./OccupationalHealth";
 import Hospital from "./Hospital";
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 
 const PatientPage = ({diagnoses}: {diagnoses: Diagnosis[]}) => {
     const { id } = useParams();
@@ -69,6 +69,7 @@ const PatientPage = ({diagnoses}: {diagnoses: Diagnosis[]}) => {
                     </Box>
                 ))}
             </div>
+            <Button variant="contained">Add New Entry</Button>
         </div>
     );
 };

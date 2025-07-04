@@ -1,9 +1,28 @@
-import { NewPatientEntry, Gender } from './types';
+import { NewPatientEntry, 
+  Gender, 
+  Diagnosis, 
+  HealthCheckRating, 
+  EntryWithoutId } from './types';
 import { z } from 'zod';
 
 export const toNewPatientEntry = (object: unknown): NewPatientEntry => {
   return newEntrySchema.parse(object);
 };
+
+export const toNewDiagnosisEntry = (object: unknown): EntryWithoutId => {
+  return newDiagnosisEntrySchema.parse(object);
+};
+
+
+export const parseDiagnosisCodes = (object: unknown): Array<Diagnosis['code']> =>  {
+  if (!object || typeof object !== 'object' || !('diagnosisCodes' in object)) {
+    // we will just trust the data to be in correct form
+    return [] as Array<Diagnosis['code']>;
+  }
+
+  return object.diagnosisCodes as Array<Diagnosis['code']>;
+};
+
 
 export const newEntrySchema = z.object({
   name: z.string(),
@@ -12,6 +31,82 @@ export const newEntrySchema = z.object({
   gender: z.nativeEnum(Gender),
   occupation: z.string(),
 });
+
+// export const newDiagnosisEntrySchema = z.object({
+//   date: z.string().date(),
+//   specialist: z.string(),
+//   description: z.string(),
+//   diagnosisCodes: z.array(z.string()).optional(),
+//   healthRating: z.nativeEnum(HealthCheckRating).optional(),
+//   type: z.enum(['OccupationalHealthcare', 'HealthCheck', 'Hospital']),
+//   employerName: z.string().optional(),
+//   sickLeave: z.object({
+//     startDate: z.string().date(),
+//     endDate: z.string().date()
+//   }).optional(),
+//   discharge: z.object({
+//     date: z.string().date(),
+//     criteria: z.string()
+//   }).optional()
+// });
+
+const baseEntry = z.object({
+  description: z.string(),
+  date: z.string().date(),
+  specialist: z.string(),
+  diagnosisCodes: z.array(z.string()).optional()
+});
+
+const healthCheckEntry = baseEntry.extend({
+  type: z.literal("HealthCheck"),
+  healthCheckRating: z.nativeEnum(HealthCheckRating)
+});
+
+const hospitalEntry = baseEntry.extend({
+  type: z.literal("Hospital"),
+  discharge: z.object({
+    date: z.string().date(),
+    criteria: z.string()
+  })
+});
+
+const occupationalEntry = baseEntry.extend({
+  type: z.literal("OccupationalHealthcare"),
+  employerName: z.string(),
+  sickLeave: z.object({
+    startDate: z.string().date(),
+    endDate: z.string().date()
+  }).optional()
+});
+
+export const newDiagnosisEntrySchema = z.discriminatedUnion("type", [
+  healthCheckEntry,
+  hospitalEntry,
+  occupationalEntry
+]);
+
+
+/**
+ * 
+ * entries: [
+      {
+        id: 'b4f4eca1-2aa7-4b13-9a18-4a5535c3c8da',
+        date: '2019-10-20',
+        specialist: 'MD House',
+        type: 'HealthCheck',
+        description: 'Yearly control visit. Cholesterol levels back to normal.',
+        healthCheckRating: 0,
+      },
+      {
+        id: 'fcd59fa6-c4b4-4fec-ac4d-df4fe1f85f62',
+        date: '2019-09-10',
+        specialist: 'MD House',
+        type: 'OccupationalHealthcare',
+        employerName: 'FBI',
+        description: 'Prescriptions renewed.',
+      }
+ */
+
 
 // const toNewPatientEntry = (object: unknown): NewPatientEntry => {
 //   if ( !object || typeof object !== 'object' ) {
