@@ -10,12 +10,6 @@ export interface BaseEntry {
   diagnosisCodes?: Array<Diagnosis['code']>;
 }
 
-// export enum EntryType {
-//   HealthCheck = "HealthCheck",
-//   OccupationalHealthcare = "OccupationalHealthcare",
-//   Hospital = "Hospital"
-// }
-
 export enum HealthCheckRating {
   "Healthy" = 0,
   "LowRisk" = 1,

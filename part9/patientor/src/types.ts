@@ -17,7 +17,7 @@ export interface Patient {
   gender: Gender;
   ssn?: string;
   dateOfBirth?: string;
-  entries: BaseEntry[];
+  entries: DiagnosisEntry[];
 }
 
 export interface BaseEntry {
@@ -61,5 +61,38 @@ export type DiagnosisEntry =
   | HospitalEntry
   | OccupationalHealthcareEntry
   | HealthCheckEntry;
+
+export interface HealthCheckEntry extends BaseEntry {
+  type: "HealthCheck";
+  healthCheckRating: HealthCheckRating;
+}
+
+export interface OccupationalHealthcareEntry extends BaseEntry {
+  type: "OccupationalHealthcare";
+  employerName: string;
+  sickLeave?: {
+    startDate: string,
+    endDate: string
+  };
+}
+
+export interface HospitalEntry extends BaseEntry {
+  type: "Hospital";
+  discharge: {
+    date: string,
+    criteria: string
+  };
+}
+
+export interface Diagnosis {
+  code: string;
+  name: string;
+  latin?: string;
+}
+
+
+type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
+// Define Entry without the 'id' property
+export type EntryWithoutId = UnionOmit<DiagnosisEntry, 'id'>;
 
 export type PatientFormValues = Omit<Patient, "id" | "entries">;

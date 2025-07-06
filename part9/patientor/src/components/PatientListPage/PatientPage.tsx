@@ -3,7 +3,8 @@ import {
     Patient, 
     BaseEntry, 
     DiagnosisEntry,
-    Diagnosis } 
+    Diagnosis, 
+    } 
     from "../../types";
 import patientService from "../../services/patients";
 import { useParams } from "react-router-dom";
@@ -11,11 +12,13 @@ import { useParams } from "react-router-dom";
 import HealthCheck from "./HealthCheck";
 import OccupationalHealthcare from "./OccupationalHealth";
 import Hospital from "./Hospital";
-import { Box, Button } from "@mui/material";
+import { Alert, Box, Button, Stack } from "@mui/material";
+import EntryForm from "../EntryForm";   
 
 const PatientPage = ({diagnoses}: {diagnoses: Diagnosis[]}) => {
     const { id } = useParams();
     const [patient, setPatient] = useState<Patient | null>(null);
+    const [showForm, setShowForm] = useState(false);
 
     useEffect(() => {
         if (id) {
@@ -60,6 +63,21 @@ const PatientPage = ({diagnoses}: {diagnoses: Diagnosis[]}) => {
                 <br></br>
                 <p>SSN: {patient.ssn}</p>
                 <p>Occupation: {patient.occupation}</p>
+                <EntryForm
+                    showForm={showForm}
+                    diagnoses={diagnoses}
+                    onAddEntry={async (entry) => {
+                        try {
+                            const addedEntry = await patientService.addEntry(patient.id, entry);
+                            setPatient({ ...patient, entries: [...patient.entries, addedEntry] });
+                            setShowForm(false);
+                        } catch (error) {
+                            <Stack sx={{ width: '100%' }} spacing={2}>
+                                <Alert severity="error">error</Alert>
+                            </Stack>;
+                        }
+                    }}
+                />
             </div>
             <div>
                 <h2>Entries</h2>
@@ -69,7 +87,9 @@ const PatientPage = ({diagnoses}: {diagnoses: Diagnosis[]}) => {
                     </Box>
                 ))}
             </div>
-            <Button variant="contained">Add New Entry</Button>
+            <Button variant="contained" onClick={() => setShowForm(!showForm)}>
+                {showForm ? "Cancel" : "Add New Entry"}
+            </Button>
         </div>
     );
 };
